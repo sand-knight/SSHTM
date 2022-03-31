@@ -18,19 +18,19 @@ class _navPageState extends State<NavigableScaffold> {
 
   List<PreferredSizeWidget> ListaAppBars = <PreferredSizeWidget>[
     AppBar(
-      title: Text('Hosts'),
+      title: const Text('Hosts'),
     ),
     AppBar(
-      title: Text("Scripts"),
+      title: const Text("Scripts"),
     ),
     AppBar(
-      title: Text('Actions'),
+      title: const Text('Actions'),
     ),
     AppBar(
-      title: Text('Tasks'),
+      title: const Text('Tasks'),
     ),
     AppBar(
-      title: Text('Logs'),
+      title: const Text('Logs'),
     )
   ];
 
@@ -60,9 +60,6 @@ class _navPageState extends State<NavigableScaffold> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-        ),
         title: 'Ciao',
         home: Scaffold(
             appBar: (ListaAppBars.elementAt(selectedItem)),
