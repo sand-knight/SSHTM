@@ -10,7 +10,7 @@ class _navPageState extends State<NavigableScaffold> {
   // THE STATES
   int selectedItem = 0;
 
-  void gennaro(int index) {
+  void updateSelectedTab(int index) {
     setState(() {
       selectedItem = index;
     });
@@ -60,6 +60,7 @@ class _navPageState extends State<NavigableScaffold> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        theme: ThemeData.dark(),
         title: 'Ciao',
         home: Scaffold(
             appBar: (ListaAppBars.elementAt(selectedItem)),
@@ -83,7 +84,7 @@ class _navPageState extends State<NavigableScaffold> {
                 BottomNavigationBarItem(
                     icon: Icon(Icons.event_note), label: "Logs"),
               ],
-              onTap: gennaro,
+              onTap: updateSelectedTab,
               currentIndex: selectedItem,
             )));
   }
