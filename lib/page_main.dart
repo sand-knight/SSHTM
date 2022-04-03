@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sshtm/Hosts/page_Host.dart';
+import "Hosts/object_Host.dart";
 
 enum Page { Hosts, Scripts, Actions, Tasks, Logs }
 
@@ -17,9 +19,7 @@ class _navPageState extends State<NavigableScaffold> {
   }
 
   List<PreferredSizeWidget> ListaAppBars = <PreferredSizeWidget>[
-    AppBar(
-      title: const Text('Hosts'),
-    ),
+    hostsAppBar,
     AppBar(
       title: const Text("Scripts"),
     ),
@@ -35,10 +35,7 @@ class _navPageState extends State<NavigableScaffold> {
   ];
 
   List<Widget> ListaDeiCorpi = <Widget>[
-    Center(
-        child: Container(
-      child: const Text('Qua dentro stanno i server'),
-    )),
+    hostsBody,
     Center(
         child: Container(
       child: const Text('Qua dentro stanno gli script'),
