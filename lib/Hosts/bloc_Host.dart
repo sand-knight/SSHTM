@@ -1,39 +1,36 @@
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Hosts/object_Terminal.dart';
+import 'package:sshtm/Hosts/state_Host.dart';
 
-abstract class hostrelatedevent {}
+class cubit_Hosts extends Cubit<hostsState> {
+  HostList localList; // <-- Istanza  locale della lista
 
-class hostrelatedevent_removeHost extends hostrelatedevent {}
+  //Il costruttore di HostList leggerà dalla memoria la lista, da qui lo stato iniziale?
+  cubit_Hosts(this.localList)
+      : super(hostsLoadedState(localList.get())); // TODO gestire eccezioni
 
-class hostrelatedevent_addTerminal extends hostrelatedevent {}
+  void addHost(Host newhost) {
+    localList.add(newhost);
+    emit(hostAdddedState(localList.get()));
+  }
 
-class hostrelatedevent_closeTerminal extends hostrelatedevent {}
+  void removeHost(Host toRemove) {
+    localList.removeHost(toRemove); // TODO Gestire valori di ritorno;
+    emit(hostRemovedState(localList.get()));
+  }
 
-/* Uso cubit perché non so come passare un operando al bloc */
-class cubit_Hosts extends Cubit<HostList> {
-  cubit_Hosts() : super(HostList()) {
-    /*Hostlist.add ritorna una reference a Hostlist. E' appropriato?*/
-    void addHost(Host newhost) {
-      emit(state.add(newhost));
-    }
-
-    void removeHost(Host toRemove) {
-      emit(state.removeHost(toRemove));
-    }
-
-    /* Questo funziona? Lo stato è una lista di host, ognuno della quale ha una
+  /* Questo funziona? Lo stato è una lista di host, ognuno della quale ha una
         lista di terminali aperti. Agire su un oggetto host ed emettere la lista
         aggiorna lo stato?
     */
-    void addTerminal(Host host) {
-      host.addTerminal();
-      emit(state);
-    }
+  void addTerminal(Host host) {
+    host.addTerminal();
+    emit(hostTerminalAddedState(localList.get()));
+  }
 
-    void removeTerminal(Terminal toBeRemoved, Host host) {
-      host.removeTerminal(toBeRemoved);
-      emit(state);
-    }
+  void removeTerminal(Terminal toBeRemoved, Host host) {
+    host.removeTerminal(toBeRemoved); //TODO gestire valori di ritorno
+    emit(hostTerminalRemovedState(localList.get()));
   }
 }

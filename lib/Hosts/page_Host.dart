@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sshtm/Hosts/bloc_Host.dart';
+
+import 'object_Host.dart';
 
 AppBar hostsAppBar = AppBar(
   title: const Text("Hosts"),
@@ -10,6 +14,7 @@ AppBar hostsAppBar = AppBar(
   automaticallyImplyLeading: true,
 );
 
-Widget hostsBody = Container(
-  child: Align(alignment: Alignment.topCenter, child: Text("Hosts?")),
+Widget hostsBody = BlocProvider(
+  create: (context) => cubit_Hosts(HostList()),
+  child: Center(child: Text("Qui avrà la mia lista!")),
 );

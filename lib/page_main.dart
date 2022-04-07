@@ -5,6 +5,9 @@ import "Hosts/object_Host.dart";
 enum Page { Hosts, Scripts, Actions, Tasks, Logs }
 
 class NavigableScaffold extends StatefulWidget {
+  const NavigableScaffold({Key? key}) : super(key: key);
+
+  @override
   _navPageState createState() => _navPageState();
 }
 
@@ -36,22 +39,10 @@ class _navPageState extends State<NavigableScaffold> {
 
   List<Widget> ListaDeiCorpi = <Widget>[
     hostsBody,
-    Center(
-        child: Container(
-      child: const Text('Qua dentro stanno gli script'),
-    )),
-    Center(
-        child: Container(
-      child: const Text('Qua dentro stanno le action'),
-    )),
-    Center(
-        child: Container(
-      child: const Text('Qua dentro stanno le task'),
-    )),
-    Center(
-        child: Container(
-      child: const Text('Qua dentro stanno i log'),
-    )),
+    Center(child: const Text('Qua dentro stanno gli script')),
+    Center(child: const Text('Qua dentro stanno le action')),
+    Center(child: const Text('Qua dentro stanno le task')),
+    Center(child: const Text('Qua dentro stanno i log')),
   ];
 
   @override
