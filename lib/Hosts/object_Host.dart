@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 
 import 'object_Terminal.dart';
 
+class noSuchElementException implements Exception {
+  String descr;
+  noSuchElementException(this.descr);
+}
+
 class Host {
   late int ID;
   String name;
@@ -15,8 +20,24 @@ class Host {
   Host(this.name, this.description, this.address, this.port, this.accountName,
       this.password) {
     /* generate unique id */
-    ID = this.hashCode;
+    this.ID = this.hashCode;
   }
+
+  bool addTerminal() {
+    Terminal newTerminal = Terminal(openTerminals.length, this);
+    openTerminals.add(newTerminal);
+    return true;
+  }
+
+  bool removeTerminal(Terminal toBeRemoved) {
+    if (openTerminals.remove(toBeRemoved)) {
+      return true;
+    } else {
+      throw noSuchElementException("Ma questo terminale non esiste");
+    }
+  }
+
+  String getName() => this.name;
 }
 
 class HostList {
@@ -24,10 +45,18 @@ class HostList {
 
   List<Host> get() => list;
 
+  HostList removeHost(Host toRemove) {
+    if (list.remove(toRemove)) {
+      return this;
+    } else {
+      throw noSuchElementException("Ma questo host non ci era");
+    }
+  }
+
   HostList add(Host newHost) {
     list.add(newHost);
-    return this;
     /*SAVE HOST ON THE DISK*/
+    return this;
   }
 
   HostList() {
