@@ -7,7 +7,31 @@ class noSuchElementException implements Exception {
   noSuchElementException(this.descr);
 }
 
-class Host {
+abstract class Host {
+  List<Terminal> _openedTerminals = <Terminal>[];
+
+  List<Terminal> openedTerminals() => _openedTerminals;
+
+  bool addTerminal() {
+    Terminal newTerminal = Terminal(_openedTerminals.length, this);
+    _openedTerminals.add(newTerminal);
+    return true;
+  }
+
+  bool removeTerminal(Terminal toBeRemoved) {
+    if (_openedTerminals.remove(toBeRemoved)) {
+      return true;
+    } else {
+      throw noSuchElementException("Ma questo terminale non esiste");
+    }
+  }
+
+  String getName() => "Android";
+}
+
+class AndroidHost extends Host {}
+
+class RemoteHost extends Host {
   late int ID;
   String name;
   String description;
@@ -15,29 +39,20 @@ class Host {
   int port;
   String accountName;
   String password;
-  List<Terminal> openTerminals = <Terminal>[];
 
-  Host(this.name, this.description, this.address, this.port, this.accountName,
-      this.password) {
+  RemoteHost(this.name, this.description, this.address, this.port,
+      this.accountName, this.password) {
     /* generate unique id */
     this.ID = this.hashCode;
   }
 
-  bool addTerminal() {
-    Terminal newTerminal = Terminal(openTerminals.length, this);
-    openTerminals.add(newTerminal);
-    return true;
-  }
-
-  bool removeTerminal(Terminal toBeRemoved) {
-    if (openTerminals.remove(toBeRemoved)) {
-      return true;
-    } else {
-      throw noSuchElementException("Ma questo terminale non esiste");
-    }
-  }
-
+  @override
   String getName() => this.name;
+
+  String getDescription() => description;
+  String getAddress() => address;
+  int getAssignedPort() => port;
+  String getUser() => accountName;
 }
 
 class HostList {
@@ -60,10 +75,11 @@ class HostList {
   }
 
   HostList() {
+    list.add(AndroidHost());
     /*Carica gli host dalla memoria*/
-    list.add(Host(
+    list.add(RemoteHost(
         "DummyHost", "JustForExample", "127.0.0.1", 22, "giulio", "password"));
-    list.add(Host(
+    list.add(RemoteHost(
         "DummyHost2", "JustForExample", "127.0.0.1", 22, "giulio", "password"));
   }
 }

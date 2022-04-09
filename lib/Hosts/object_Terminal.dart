@@ -8,6 +8,18 @@ class Terminal {
 
   Terminal(this.ID, this.host);
 
-  getID() => this.ID;
-  getHost() => this.host;
+  int getID() => ID;
+
+  Host getHost() => host;
+
+  /*Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text(host.name + " (" + ID.toString() + ")"),
+        ),
+        body: Center(
+          child: Text("this is a terminal"),
+        ));
+  }
+  */
 }

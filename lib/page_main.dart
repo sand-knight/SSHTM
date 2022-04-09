@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sshtm/Hosts/page_Host.dart';
+import 'package:sshtm/Hosts/widget_page_Host.dart';
 import "Hosts/object_Host.dart";
 
 enum Page { Hosts, Scripts, Actions, Tasks, Logs }

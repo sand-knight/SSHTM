@@ -2,6 +2,7 @@ import 'object_Host.dart';
 
 abstract class hostsState {
   final List<Host> list;
+  List<Host> getList() => list;
   const hostsState(this.list);
 }
 
@@ -20,4 +21,8 @@ class hostTerminalAddedState extends hostsState {
 
 class hostTerminalRemovedState extends hostsState {
   hostTerminalRemovedState(List<Host> list) : super(list);
+}
+
+class hostsLoadedState extends hostsState {
+  hostsLoadedState(List<Host> list) : super(list);
 }

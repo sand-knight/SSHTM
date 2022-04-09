@@ -1,6 +1,10 @@
+# Roadmap
 
-In ambito Hosts:
-        i widget sono da caricarsi nello scaffold descritto in page_main;
-        gli oggetti ne descrivono la struttura dati.
-    -Creato un abbozzo di bloc;
-    -proverò a generare una listview con dettagli provenienti dallo stato del cubit.
+
+
+#### In ambito Hosts
+
+* [X] Creare un abbozzo di bloc;
+* [X] proverò a generare una listview con dettagli provenienti dallo stato del cubit
+* [ ] Testare la gestione degli stati con una funzione fittizia di apertura dei terminali
+* [ ] Navigazione verso i terminali e bottom navigation drawer per navigazione / gestione dei terminali
