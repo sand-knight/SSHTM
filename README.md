@@ -2,7 +2,8 @@
 
 A new Flutter project. This app will manage connections to ssh servers, store your scripts, execute rapid actions on defined servers, define event driven tasks, sort execution logs. 
 
-Last test-able build: 9  Apr 2022 18:00
+Last test-able build: 11  Apr 2022 2:00
+What you can see: list of hosts, cubit updating number of terminals on touch.
 
 
 ### Dettagli strutturali

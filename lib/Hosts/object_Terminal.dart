@@ -1,10 +1,8 @@
-import 'package:flutter/material.dart';
-
 import 'object_Host.dart';
 
 class Terminal {
-  int ID;
-  Host host;
+  final int ID;
+  final Host host;
 
   Terminal(this.ID, this.host);
 

@@ -7,7 +7,7 @@ import 'package:sshtm/Hosts/widget_tile_host.dart';
 import 'object_Host.dart';
 
 AppBar hostsAppBar = AppBar(
-  title: const Text("Hosts"),
+  title: const Text("Host"),
   leading: Icon(Icons.arrow_left),
   actions: <Widget>[
     Icon(Icons.add),
@@ -16,24 +16,18 @@ AppBar hostsAppBar = AppBar(
   automaticallyImplyLeading: true,
 );
 
-Widget hostsBody = BlocProvider(
-  create: (context) => cubit_Hosts(HostList()),
-  child: Align(
-      alignment: Alignment.topCenter,
+Widget hostsBody = Center(
+  child: BlocProvider(
+      create: (context) => cubit_Hosts(HostList()),
       child: BlocBuilder<cubit_Hosts, hostsState>(builder: (context, state) {
         return ListView(
           children: List.generate(state.getList().length, (index) {
             if (index == 0) {
               //first element is android terminal
               return AndroidTerminaTile(
-                  terminalcount: state.getList()[0].openedTerminals().length);
+                  host: state.getList()[0] as AndroidHost);
             } else {
-              RemoteHost thisTileHost = state.getList()[index] as RemoteHost;
-              return HostTile(
-                  address: thisTileHost.getAddress(),
-                  user: thisTileHost.getUser(),
-                  terminalcount: thisTileHost.openedTerminals().length,
-                  title: thisTileHost.getName());
+              return HostTile(host: state.getList()[index] as RemoteHost);
             }
           }),
         );

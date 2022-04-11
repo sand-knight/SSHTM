@@ -1,55 +1,49 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sshtm/Hosts/object_Host.dart';
+import 'bloc_Host.dart';
 
 abstract class basetile extends StatelessWidget {
   final String _tilename;
-  final int _terminalcount;
+  final Host _host;
 
-  const basetile({Key? key, required String title, required int terminalcount})
+  const basetile({Key? key, required String title, required Host abhost})
       : _tilename = title,
-        _terminalcount = terminalcount,
+        _host = abhost,
         super(key: key);
 }
 
 class AndroidTerminaTile extends basetile {
-  const AndroidTerminaTile({Key? key, required int terminalcount})
-      : super(
-            key: key, title: "Android Terminal", terminalcount: terminalcount);
+  const AndroidTerminaTile({Key? key, required AndroidHost host})
+      : super(key: key, title: "Android Terminal", abhost: host);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: ListTile(
-          title: Text(_tilename),
-          isThreeLine: false,
-          trailing: Text(_terminalcount.toString()),
-        ));
+    return ListTile(
+      contentPadding: EdgeInsets.all(10),
+      onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
+      title: Text(_tilename),
+      isThreeLine: false,
+      trailing: Text(_host.openedTerminals().length.toString()),
+    );
   }
 }
 
 class HostTile extends basetile {
-  final String _address;
-  final String _user;
-
-  const HostTile(
-      {Key? key,
-      required String address,
-      required String user,
-      required int terminalcount,
-      required String title})
-      : _user = user,
-        _address = address,
-        super(key: key, title: title, terminalcount: terminalcount);
+  HostTile({Key? key, required RemoteHost host})
+      : super(key: key, abhost: host, title: host.getName());
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-        padding: EdgeInsets.all(10),
-        child: ListTile(
-          title: Text(this._tilename),
-          isThreeLine: true,
-          subtitle: Text(this._address + '\n' + this._user),
-          trailing: Text(_terminalcount.toString()),
-        ));
+    return ListTile(
+      contentPadding: EdgeInsets.all(10),
+      onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
+      title: Text(_host.getName()),
+      isThreeLine: true,
+      subtitle: Text((_host as RemoteHost).getAddress() +
+          '\n' +
+          (_host as RemoteHost).getUser()),
+      trailing: Text(_host.openedTerminals().length.toString()),
+    );
   }
 }
