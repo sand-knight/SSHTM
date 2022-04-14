@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
+import 'package:sshtm/Hosts/widget_navigation_Sheet.dart';
 import 'bloc_Host.dart';
 
 abstract class basetile extends StatelessWidget {
@@ -37,7 +38,18 @@ class HostTile extends basetile {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.all(10),
-      onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
+      onTap: () => showModalBottomSheet<void>(
+          context: context,
+          isScrollControlled: true,
+          isDismissible: true,
+          enableDrag: true,
+          builder: (context) => navigation_Sheet(
+              selectedHost: BlocProvider.of<cubit_Hosts>(context)
+                  .state
+                  .getList()
+                  .elementAt(0))), //_host));
+
+      //onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
       title: Text(_host.getName()),
       isThreeLine: true,
       subtitle: Text((_host as RemoteHost).getAddress() +

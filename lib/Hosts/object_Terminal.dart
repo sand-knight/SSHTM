@@ -1,23 +1,31 @@
+import 'package:flutter/material.dart';
+
 import 'object_Host.dart';
 
-class Terminal {
-  final int ID;
-  final Host host;
+class Terminal extends StatelessWidget {
+  final int _ID;
+  final Host _host;
+  final String _title;
 
-  Terminal(this.ID, this.host);
+  Terminal(this._ID, this._host)
+      : _title = _host.getName() + " (" + _ID.toString() + ")";
 
-  int getID() => ID;
+  int getID() => _ID;
 
-  Host getHost() => host;
+  Host getHost() => _host;
 
-  /*Widget build(BuildContext context) {
+  String getTitle() => _title;
+
+  Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(host.name + " (" + ID.toString() + ")"),
+          title: Text(_title),
         ),
         body: Center(
-          child: Text("this is a terminal"),
+          child: Text("this is the " +
+              _ID.toString() +
+              "th terminal to " +
+              _host.getName()),
         ));
   }
-  */
 }

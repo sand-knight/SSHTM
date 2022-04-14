@@ -26,6 +26,10 @@ abstract class Host {
     }
   }
 
+  void removeTerminalAt(int index) {
+    _openedTerminals.removeAt(index);
+  }
+
   String getName() => "Android";
 }
 
