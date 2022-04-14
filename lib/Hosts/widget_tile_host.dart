@@ -22,7 +22,14 @@ class AndroidTerminaTile extends basetile {
   Widget build(BuildContext context) {
     return ListTile(
       contentPadding: EdgeInsets.all(10),
-      onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
+      onTap: () => showModalBottomSheet(
+          context: context,
+          isScrollControlled: true,
+          isDismissible: true,
+          enableDrag: true,
+          builder: (context) => navigation_Sheet(
+              selectedHost:
+                  _host)), //BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
       title: Text(_tilename),
       isThreeLine: false,
       trailing: Text(_host.openedTerminals().length.toString()),
@@ -43,11 +50,7 @@ class HostTile extends basetile {
           isScrollControlled: true,
           isDismissible: true,
           enableDrag: true,
-          builder: (context) => navigation_Sheet(
-              selectedHost: BlocProvider.of<cubit_Hosts>(context)
-                  .state
-                  .getList()
-                  .elementAt(0))), //_host));
+          builder: (context) => navigation_Sheet(selectedHost: _host)),
 
       //onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
       title: Text(_host.getName()),

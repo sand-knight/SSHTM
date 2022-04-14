@@ -17,19 +17,16 @@ AppBar hostsAppBar = AppBar(
 );
 
 Widget hostsBody = Center(
-  child: BlocProvider(
-      create: (context) => cubit_Hosts(HostList()),
-      child: BlocBuilder<cubit_Hosts, hostsState>(builder: (context, state) {
-        return ListView(
-          children: List.generate(state.getList().length, (index) {
-            if (index == 0) {
-              //first element is android terminal
-              return AndroidTerminaTile(
-                  host: state.getList()[0] as AndroidHost);
-            } else {
-              return HostTile(host: state.getList()[index] as RemoteHost);
-            }
-          }),
-        );
-      })),
+  child: BlocBuilder<cubit_Hosts, hostsState>(builder: (context, state) {
+    return ListView(
+      children: List.generate(state.getList().length, (index) {
+        if (index == 0) {
+          //first element is android terminal
+          return AndroidTerminaTile(host: state.getList()[0] as AndroidHost);
+        } else {
+          return HostTile(host: state.getList()[index] as RemoteHost);
+        }
+      }),
+    );
+  }),
 );

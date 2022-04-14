@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'object_Host.dart';
 
 class Terminal extends StatelessWidget {
-  final int _ID;
+  int _ID;
   final Host _host;
   final String _title;
 
