@@ -2,12 +2,12 @@
 
 A new Flutter project. This app will manage connections to ssh servers, store scripts, execute rapid actions on defined servers, define event driven tasks, sort execution logs.
 
-Last test-able build: 14  Apr 2022 16:00
-What you can see: list of hosts, list of (fake) terminals updated based on state
+Last test-able build: 18  Apr 2022 19:00
+What you can see: list of hosts, list of working terminals updated and saved on exit
 
 
 
-https://user-images.githubusercontent.com/79469450/163417765-928d749d-f879-4514-ada8-48f3ef9b52fd.mp4
+https://user-images.githubusercontent.com/79469450/163856892-c35ab039-1d33-461c-bbdc-3c72e9256770.mp4
 
 
 
@@ -24,3 +24,4 @@ Lo scaffold principale conserva lo stato dell'ultima sezione visitata; ognuna è
 ### Dettagli sullo stato
 
 Cubit per gestire `<Host< Terminal[] >>[]` (punto 1) è "globale" (padre di Material App) perché ci sono più route che hanno bisogno dello stato degli host: gli sheet associati ad ogni host, il side drawer, i menu per il lancio degli script, la pagina di definizione di una action.
+I terminali salvati nello stato hanno una copia della lavagna, così che lo stato sia salvato. La pagina widget è stateless.
