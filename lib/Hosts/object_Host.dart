@@ -8,17 +8,19 @@ class noSuchElementException implements Exception {
 }
 
 abstract class Host {
-  List<Terminal> _openedTerminals = <Terminal>[];
+  List<TerminalWidget> _openedTerminals = <TerminalWidget>[];
 
-  List<Terminal> openedTerminals() => _openedTerminals;
+  List<TerminalWidget> openedTerminals() => _openedTerminals;
 
   bool addTerminal() {
-    Terminal newTerminal = Terminal(_openedTerminals.length, this);
+    TerminalWidget newTerminal = _openedTerminals.isEmpty
+        ? TerminalWidget(0, this)
+        : TerminalWidget(_openedTerminals.last.getID() + 1, this);
     _openedTerminals.add(newTerminal);
     return true;
   }
 
-  bool removeTerminal(Terminal toBeRemoved) {
+  bool removeTerminal(TerminalWidget toBeRemoved) {
     if (_openedTerminals.remove(toBeRemoved)) {
       return true;
     } else {

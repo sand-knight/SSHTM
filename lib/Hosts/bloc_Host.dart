@@ -29,7 +29,7 @@ class cubit_Hosts extends Cubit<hostsState> {
     emit(hostTerminalAddedState(localList.get()));
   }
 
-  void removeTerminal(Terminal toBeRemoved, Host host) {
+  void removeTerminal(TerminalWidget toBeRemoved, Host host) {
     host.removeTerminal(toBeRemoved); //TODO gestire valori di ritorno
     emit(hostTerminalRemovedState(localList.get()));
   }
