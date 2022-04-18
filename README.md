@@ -5,6 +5,12 @@ A new Flutter project. This app will manage connections to ssh servers, store sc
 Last test-able build: 14  Apr 2022 16:00
 What you can see: list of hosts, list of (fake) terminals updated based on state
 
+
+
+https://user-images.githubusercontent.com/79469450/163417765-928d749d-f879-4514-ada8-48f3ef9b52fd.mp4
+
+
+
 ### Dettagli logici d'implementazione
 
 Lo scaffold principale conserva lo stato dell'ultima sezione visitata; ognuna è definita da un appmenu ed un body diverso che saranno implementati separatamente cercando di separare il più possibile i vari ambiti, che sono:
