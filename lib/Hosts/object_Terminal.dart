@@ -1,7 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sshtm/Hosts/input_behavior_mymobile.dart';
 import 'package:xterm/flutter.dart';
+import 'package:xterm/frontend/input_behavior_desktop.dart';
+import 'package:xterm/frontend/input_behavior_mobile.dart';
 import 'package:xterm/xterm.dart';
 import 'object_Host.dart';
 import "package:pty/pty.dart";
@@ -97,7 +100,8 @@ class _TerminalWidgetState extends State<TerminalWidget> {
           title: Text(_title),
         ),
         body: SafeArea(
-          child: TerminalView(terminal: terminal),
+          child: TerminalView(
+              terminal: terminal, inputBehavior: InputBehaviorSSHTM()),
         ));
   }
 }
