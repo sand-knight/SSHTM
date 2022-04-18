@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Hosts/widget_navigation_Sheet.dart';
-import 'bloc_Host.dart';
 
 abstract class basetile extends StatelessWidget {
   final String _tilename;
@@ -39,7 +37,7 @@ class AndroidTerminaTile extends basetile {
 
 class HostTile extends basetile {
   HostTile({Key? key, required RemoteHost host})
-      : super(key: key, abhost: host, title: host.getName());
+      : super(key: key, abhost: host, title: host.name);
 
   @override
   Widget build(BuildContext context) {
@@ -53,11 +51,10 @@ class HostTile extends basetile {
           builder: (context) => navigation_Sheet(selectedHost: _host)),
 
       //onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
-      title: Text(_host.getName()),
+      title: Text(_host.name),
       isThreeLine: true,
-      subtitle: Text((_host as RemoteHost).getAddress() +
-          '\n' +
-          (_host as RemoteHost).getUser()),
+      subtitle: Text(
+          (_host as RemoteHost).address + '\n' + (_host as RemoteHost).user),
       trailing: Text(_host.openedTerminals().length.toString()),
     );
   }

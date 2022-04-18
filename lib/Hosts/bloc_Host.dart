@@ -1,6 +1,6 @@
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:sshtm/Hosts/object_Host.dart';
-import 'package:sshtm/Hosts/object_Terminal.dart';
+import 'package:sshtm/Hosts/object_terminal_data.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
 
 class cubit_Hosts extends Cubit<hostsState> {
@@ -29,7 +29,7 @@ class cubit_Hosts extends Cubit<hostsState> {
     emit(hostTerminalAddedState(localList.get()));
   }
 
-  void removeTerminal(TerminalWidget toBeRemoved, Host host) {
+  void removeTerminal(TerminalData toBeRemoved, Host host) {
     host.removeTerminal(toBeRemoved); //TODO gestire valori di ritorno
     emit(hostTerminalRemovedState(localList.get()));
   }

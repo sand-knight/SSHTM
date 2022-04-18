@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-
-import 'object_Terminal.dart';
+import 'package:sshtm/Hosts/object_terminal_data.dart';
 
 class noSuchElementException implements Exception {
   String descr;
@@ -8,19 +6,19 @@ class noSuchElementException implements Exception {
 }
 
 abstract class Host {
-  List<TerminalWidget> _openedTerminals = <TerminalWidget>[];
+  List<TerminalData> _openedTerminals = <TerminalData>[];
 
-  List<TerminalWidget> openedTerminals() => _openedTerminals;
+  List<TerminalData> openedTerminals() => _openedTerminals;
 
   bool addTerminal() {
-    TerminalWidget newTerminal = _openedTerminals.isEmpty
-        ? TerminalWidget(0, this)
-        : TerminalWidget(_openedTerminals.last.getID() + 1, this);
+    TerminalData newTerminal = _openedTerminals.isEmpty
+        ? TerminalData(0, this)
+        : TerminalData(_openedTerminals.last.ID + 1, this);
     _openedTerminals.add(newTerminal);
     return true;
   }
 
-  bool removeTerminal(TerminalWidget toBeRemoved) {
+  bool removeTerminal(TerminalData toBeRemoved) {
     if (_openedTerminals.remove(toBeRemoved)) {
       return true;
     } else {
@@ -32,33 +30,32 @@ abstract class Host {
     _openedTerminals.removeAt(index);
   }
 
-  String getName() => "Android";
+  String get name => "Android";
 }
 
 class AndroidHost extends Host {}
 
 class RemoteHost extends Host {
-  late int ID;
-  String name;
-  String description;
-  String address;
-  int port;
-  String accountName;
-  String password;
+  late int _ID;
+  final String _name;
+  final String _description;
+  String _address;
+  int _port;
+  String _accountName;
+  String _password;
 
-  RemoteHost(this.name, this.description, this.address, this.port,
-      this.accountName, this.password) {
+  RemoteHost(this._name, this._description, this._address, this._port,
+      this._accountName, this._password) {
     /* generate unique id */
-    this.ID = this.hashCode;
+    this._ID = this.hashCode;
   }
 
-  @override
-  String getName() => this.name;
-
-  String getDescription() => description;
-  String getAddress() => address;
-  int getAssignedPort() => port;
-  String getUser() => accountName;
+  String get name => _name;
+  String get password => _password;
+  String get description => _description;
+  String get address => _address;
+  int get port => _port;
+  String get user => _accountName;
 }
 
 class HostList {

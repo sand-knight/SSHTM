@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
-import 'package:sshtm/Hosts/object_Terminal.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
+import 'package:sshtm/Hosts/widget_page_Terminal.dart';
 
 class navigation_Sheet extends StatelessWidget {
   final Host selectedHost;
@@ -23,7 +23,7 @@ class navigation_Sheet extends StatelessWidget {
             expand: false,
             builder: (context, controller) => Column(children: <Widget>[
                   ListTile(
-                    title: Text(selectedHost.getName()),
+                    title: Text(selectedHost.name),
                     leading: const Icon(Icons.edit),
                   ),
                   ListTile(
@@ -42,7 +42,7 @@ class navigation_Sheet extends StatelessWidget {
                               title: Text(selectedHost
                                   .openedTerminals()
                                   .elementAt(index)
-                                  .getTitle()),
+                                  .title),
                               trailing: GestureDetector(
                                   child: const Icon(Icons.close),
                                   onTap: () =>
@@ -55,9 +55,9 @@ class navigation_Sheet extends StatelessWidget {
                               onTap: () {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder: (context) {
-                                  return selectedHost
+                                  return TerminalPage(selectedHost
                                       .openedTerminals()
-                                      .elementAt(index);
+                                      .elementAt(index));
                                 }));
                               });
                         }),
