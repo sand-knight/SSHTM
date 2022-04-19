@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sshtm/Hosts/input_behavior_mymobile.dart';
+import 'package:sshtm/Hosts/input_behavior_mobile_keystrokes.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Hosts/object_terminal_backends.dart';
 import 'package:xterm/flutter.dart';
@@ -21,7 +21,7 @@ class TerminalData {
             maxLines: 10000,
             backend: RemoteTerminalBackend(_host as RemoteHost));
     _terminal_view =
-        TerminalView(terminal: terminal, inputBehavior: InputBehaviorSSHTM());
+        TerminalView(terminal: terminal, inputBehavior: MyInputBehavior());
   }
 
   int get ID => _ID;
