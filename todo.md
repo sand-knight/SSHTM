@@ -10,3 +10,4 @@
 * [X] Veri terminali
 * [ ] Menu di aggiunta degli host
 * [ ] Salvataggio e caricamento degli host dalla memoria
+* [ ] if override acceptKeyStroke=true, arrow key up viene ascoltato sia dal terminale che Android che sposta il focus verso l'alto. Provare con con un wrap del terminale in Focus (onKey:)
