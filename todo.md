@@ -2,12 +2,12 @@
 
 #### In ambito Hosts
 
-* [X] Creare un abbozzo di bloc;
-* [X] proverò a generare una listview con dettagli provenienti dallo stato del cubit
-* [X] Testare la gestione degli stati con una funzione fittizia di apertura dei terminali
-* [X] Navigazione verso i terminali e bottom navigation drawer per navigazione / gestione dei terminali
-* [ ] Side sheet per navigazione assoluta
-* [X] Veri terminali
-* [ ] Menu di aggiunta degli host
-* [ ] Salvataggio e caricamento degli host dalla memoria
-* [ ] if override acceptKeyStroke=true, arrow key up viene ascoltato sia dal terminale che Android che sposta il focus verso l'alto. Provare con con un wrap del terminale in Focus (onKey:)
+* [X] Try bloc;
+* [X] Try to generate a listview with details taken from cubit state
+* [X] Test the state management with a function that spawns fake terminals
+* [X] "Precise" navigation to terminals through bottom navigation drawer
+* [ ] Side sheet for "quick" navigation
+* [X] True terminals
+* [ ] Menu for adding a new Host
+* [ ] Store and load hosts from memory
+* [ ] if override acceptKeyStroke=true, arrow key up is listened by both the terminal and Android, which moves focus away from the terminal. Try to wrap terminal into a Fokus (onKey: )
