@@ -1,4 +1,4 @@
-import 'package:sshtm/Hosts/object_terminal_data.dart';
+import 'package:sshtm/Hosts/Terminal/object_terminal_data.dart';
 
 class noSuchElementException implements Exception {
   String descr;
