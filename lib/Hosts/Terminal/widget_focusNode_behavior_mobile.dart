@@ -28,6 +28,7 @@ FocusNode focusNodeToAbsorbKeys = FocusNode(
       LogicalKeyboardKey whatkey = event.logicalKey;
 
       if (whatkey == LogicalKeyboardKey.enter) return KeyEventResult.handled;
+      if (whatkey == LogicalKeyboardKey.tab) return KeyEventResult.handled;
       if (whatkey == LogicalKeyboardKey.arrowUp) return KeyEventResult.handled;
       if (whatkey == LogicalKeyboardKey.arrowDown)
         return KeyEventResult.handled;
