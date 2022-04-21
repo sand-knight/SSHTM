@@ -72,7 +72,7 @@ class RemoteTerminalBackend extends TerminalBackend {
     final _sshOutput = StreamController<List<int>>();
     _sshOutput.stream.transform(utf8.decoder).listen(onWrite);
 
-    onWrite('connecting to ' + _host.name + '...');
+    onWrite('connecting to ' + _host.name + ':'+ (_host.port.toString()) + '...');
 
     _client = SSHClient(
       await SSHSocket.connect(_host.address, _host.port,
@@ -81,7 +81,7 @@ class RemoteTerminalBackend extends TerminalBackend {
       onPasswordRequest: () => _host.password,
     );
 
-    _shell = await _client.shell(
+    _shell = await _client.shell( //LateInitializationError: Field '_shell' has not been initialized
         pty: const SSHPtyConfig(
       type: 'xterm-256color',
     ));

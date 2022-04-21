@@ -38,21 +38,21 @@ class AndroidHost extends Host {}
 class RemoteHost extends Host {
   late int _ID;
   final String _name;
-  final String _description;
+  //final String _description;
   String _address;
   int _port;
   String _accountName;
   String _password;
 
-  RemoteHost(this._name, this._description, this._address, this._port,
-      this._accountName, this._password) {
+  RemoteHost(this._name, this._address, this._port, this._accountName,
+      this._password) {
     /* generate unique id */
     this._ID = this.hashCode;
   }
 
   String get name => _name;
   String get password => _password;
-  String get description => _description;
+  //String get description => _description;
   String get address => _address;
   int get port => _port;
   String get user => _accountName;
@@ -80,9 +80,7 @@ class HostList {
   HostList() {
     list.add(AndroidHost());
     /*Carica gli host dalla memoria*/
-    list.add(RemoteHost(
-        "DummyHost", "JustForExample", "127.0.0.1", 22, "giulio", "password"));
-    list.add(RemoteHost(
-        "DummyHost2", "JustForExample", "127.0.0.1", 22, "giulio", "password"));
+    list.add(RemoteHost("DummyHost", "127.0.0.1", 22, "giulio", "password"));
+    list.add(RemoteHost("DummyHost2", "127.0.0.1", 22, "giulio", "password"));
   }
 }

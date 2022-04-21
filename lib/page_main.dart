@@ -24,7 +24,7 @@ class _navPageState extends State<NavigableScaffold> {
   }
 
   List<PreferredSizeWidget> ListaAppBars = <PreferredSizeWidget>[
-    hostsAppBar,
+    const hostsAppBar(),
     AppBar(
       title: const Text("Scripts"),
     ),
