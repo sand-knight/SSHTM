@@ -19,19 +19,24 @@ class navigation_Sheet extends StatelessWidget {
             minChildSize: 0.1,
             maxChildSize: 0.8,
             initialChildSize:
-                min(0.8, 0.11 + 0.05 * selectedHost.openedTerminals().length),
+                0.5, //TODO find better formula for dynamic first size
+            //min(0.8, 0.11 + 0.05 * selectedHost.openedTerminals().length),
             expand: false,
             builder: (context, controller) => Column(children: <Widget>[
-                  ListTile(
-                    title: Text(selectedHost.name),
-                    leading: const Icon(Icons.edit),
-                  ),
-                  ListTile(
-                    title: const Text("New Terminal"),
-                    leading: const Icon(Icons.add),
-                    onTap: () => BlocProvider.of<cubit_Hosts>(context)
-                        .addTerminal(selectedHost),
-                  ),
+                  Expanded(
+                      flex: 0,
+                      child: ListTile(
+                        title: Text(selectedHost.name),
+                        leading: const Icon(Icons.edit),
+                      )),
+                  Expanded(
+                      flex: 0,
+                      child: ListTile(
+                        title: const Text("New Terminal"),
+                        leading: const Icon(Icons.add),
+                        onTap: () => BlocProvider.of<cubit_Hosts>(context)
+                            .addTerminal(selectedHost),
+                      )),
                   Expanded(
                     child: ListView.builder(
                         controller: controller,
