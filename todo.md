@@ -14,3 +14,4 @@
 * [ ] Unhandled Exception: SSHStateError(Transport is closed)
 * [ ] LateInitializationError: Field '_shell@' has not been initialized. (terminal backend)
 * [ ] App might be chosen for opening text files
+* [ ] In new host page too many unchecked void objects => error message will not be shown because of exceptions
