@@ -13,3 +13,4 @@
 * [X] if override acceptKeyStroke=true, arrow key up is listened by both the terminal and Android, which moves focus away from the terminal. Try to wrap terminal into a Fokus (onKey: )
 * [ ] Unhandled Exception: SSHStateError(Transport is closed)
 * [ ] LateInitializationError: Field '_shell@' has not been initialized. (terminal backend)
+* [ ] App might be chosen for opening text files

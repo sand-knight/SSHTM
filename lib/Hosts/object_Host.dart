@@ -50,6 +50,7 @@ class RemoteHost extends Host {
     this._ID = this.hashCode;
   }
 
+  @override
   String get name => _name;
   String get password => _password;
   //String get description => _description;
@@ -59,9 +60,9 @@ class RemoteHost extends Host {
 }
 
 class HostList {
-  List<Host> list = <Host>[];
+  List<Host> _list = <Host>[];
 
-  List<Host> get() => list;
+  List<Host> get list => _list;
 
   HostList removeHost(Host toRemove) {
     if (list.remove(toRemove)) {

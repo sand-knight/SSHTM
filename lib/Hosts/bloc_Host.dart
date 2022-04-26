@@ -8,16 +8,16 @@ class cubit_Hosts extends Cubit<hostsState> {
 
   //Il costruttore di HostList leggerà dalla memoria la lista, da qui lo stato iniziale?
   cubit_Hosts(this.localList)
-      : super(hostsLoadedState(localList.get())); // TODO gestire eccezioni
+      : super(hostsLoadedState(localList.list)); // TODO gestire eccezioni
 
   void addHost(Host newhost) {
     localList.add(newhost);
-    emit(hostAdddedState(localList.get()));
+    emit(hostAdddedState(localList.list));
   }
 
   void removeHost(Host toRemove) {
     localList.removeHost(toRemove); // TODO Gestire valori di ritorno;
-    emit(hostRemovedState(localList.get()));
+    emit(hostRemovedState(localList.list));
   }
 
   /* Questo funziona? Lo stato è una lista di host, ognuno della quale ha una
@@ -26,16 +26,16 @@ class cubit_Hosts extends Cubit<hostsState> {
     */
   void addTerminal(Host host) {
     host.addTerminal();
-    emit(hostTerminalAddedState(localList.get()));
+    emit(hostTerminalAddedState(localList.list));
   }
 
   void removeTerminal(TerminalData toBeRemoved, Host host) {
     host.removeTerminal(toBeRemoved); //TODO gestire valori di ritorno
-    emit(hostTerminalRemovedState(localList.get()));
+    emit(hostTerminalRemovedState(localList.list));
   }
 
   void removeTerminalAt(int index, Host host) {
     host.removeTerminalAt(index); //TODO gestire valori di ritorno
-    emit(hostTerminalRemovedState(localList.get()));
+    emit(hostTerminalRemovedState(localList.list));
   }
 }
