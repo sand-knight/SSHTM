@@ -26,6 +26,8 @@ class ScriptList {
 
   List<Script>_list = <Script>[];
 
+  List<Script> get list => _list;
+
   void load() async{
     /* Discovery this' app folder*/
     final Directory appdata= await getApplicationDocumentsDirectory();
@@ -58,7 +60,9 @@ class ScriptList {
 
   }
 
+  //TODO Add from file
 
+  //TODO Add from text field
 
-
+  //TODO remove script
 }
