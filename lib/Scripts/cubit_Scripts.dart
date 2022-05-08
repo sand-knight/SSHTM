@@ -8,19 +8,26 @@ import 'package:sshtm/Scripts/state_Script.dart';
 
 class cubit_Scripts extends Cubit<scriptsState> {
   /* Once again here is the "state", as the changing data structure */
-  final ScriptList _localList;
+  late final ScriptList _localList;//=ScriptList();
 
-  cubit_Scripts(this._localList)
+  /*cubit_Scripts(this._localList)
       :
-        /* From source: super ( initial state )
+        /* From source: "super ( initial state )"
     could not, for the life of me, instanciate
     a new ScriptList in the constructor without
     a factory function, if that is a solution
   */
         super(scriptListNotLoadedState(_localList.list));
+*/
 
-  void loadScriptList() {
-    _localList.load();
+  factory cubit_Scripts() {
+    return cubit_Scripts._(ScriptList());
+
+  }
+  cubit_Scripts._(ScriptList list) : _localList=list, super(scriptListNotLoadedState(list.list));
+  
+  Future<void> loadScriptList() async {
+    await _localList.load();
     emit(scriptListLoadedState(_localList.list));
   }
 
@@ -41,4 +48,6 @@ class cubit_Scripts extends Cubit<scriptsState> {
     _localList.deleteScript(toDelete);
     emit(scriptListLoadedState(_localList.list));
   }
+
+  
 }

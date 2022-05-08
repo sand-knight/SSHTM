@@ -1,6 +1,5 @@
 # Roadmap
 
-#### In ambito Hosts
 
 * [X] Try bloc;
 * [X] Try to generate a listview with details taken from cubit state
@@ -17,3 +16,6 @@
 * [ ] In new host page too many unchecked void objects => error message will not be shown because of exceptions
 * [ ] Scripts overview section
 * [ ] Scripts execution
+* [ ] Migrate from hostsState.getList() to dart-specific getter
+* [ ] in cubit_scripts: bloc is lazy: it's not useful to have an unloaded state
+* [ ] move cubit_scripts to top with multiblocprovider, or else, the bloc is destroyed at every page change. Furthermore, bloc is lazy, so you have no reason not to declare it early

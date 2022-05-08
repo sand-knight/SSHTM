@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/widget_page_Host.dart';
+import 'package:sshtm/Scripts/widget_page_Scripts.dart';
 import 'Hosts/bloc_Host.dart';
 import "Hosts/object_Host.dart";
 
@@ -25,9 +26,7 @@ class _navPageState extends State<NavigableScaffold> {
 
   List<PreferredSizeWidget> ListaAppBars = <PreferredSizeWidget>[
     const hostsAppBar(),
-    AppBar(
-      title: const Text("Scripts"),
-    ),
+    const scriptsAppBar(),
     AppBar(
       title: const Text('Actions'),
     ),
@@ -41,7 +40,7 @@ class _navPageState extends State<NavigableScaffold> {
 
   List<Widget> ListaDeiCorpi = <Widget>[
     hostsBody,
-    Center(child: const Text('Qua dentro stanno gli script')),
+    scriptsBody(),
     Center(child: const Text('Qua dentro stanno le action')),
     Center(child: const Text('Qua dentro stanno le task')),
     Center(child: const Text('Qua dentro stanno i log')),

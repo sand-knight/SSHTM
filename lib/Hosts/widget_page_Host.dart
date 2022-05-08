@@ -6,7 +6,7 @@ import 'package:sshtm/Hosts/state_Host.dart';
 import 'package:sshtm/Hosts/widget_page_new_host.dart';
 import 'package:sshtm/Hosts/widget_tile_host.dart';
 
-import 'object_Host.dart';
+import 'package:sshtm/Hosts/object_Host.dart';
 
 class hostsAppBar extends StatelessWidget implements PreferredSizeWidget{
   const hostsAppBar({Key? key}) : super(key: key);
@@ -17,7 +17,7 @@ class hostsAppBar extends StatelessWidget implements PreferredSizeWidget{
   @override
   Widget build(BuildContext context){
     return AppBar(
-      title: const Text("Host"),
+      title: const Text("Hosts"),
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.add),

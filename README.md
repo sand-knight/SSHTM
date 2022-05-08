@@ -3,7 +3,7 @@
 A new Flutter project for a class assignment. This app aims to manage connections to ssh servers, store scripts, execute rapid actions on defined servers, define event driven tasks, sort execution logs.
 
 Last test-able build: 21  Apr 2022 23:26
-What you can see: list of hosts, list of working terminals updated and saved on navigation, menu to add new Host.
+What you can see: list of hosts, list of working terminals updated and saved on navigation, menu to add new Host. Useless list of scripts, read from Android/data/com.example.sshtm/files/Scripts
 
 
 
@@ -22,7 +22,16 @@ The state of the main scaffold is the last visited section; every section has a 
 4. Tasks : (Actions, AndroidEvent) associations, for automation.
 5. Logs : stdin,stdout e stderr will be saved in text files, grouped by their execution batch of origin.
 
-### Diary of the state management
+### Diary of state management
 
 Cubit to manage `<Host< Terminal[] >>[]` (1) is "global" (wraps Material App) because many routes are going need the state of the hosts.
 Terminals are saved from route change by holding a reference to the terminal view. The terminal page is stateless.
+
+Discovered that bloc is lazy: there is no reason not to create a bloc early in the tree.
+
+### Diary of storage choices
+
+Script are actual files stored inside Android/data/com.example.sshtm/files/Scripts. Their name is their actual filename, their comment is
+the commented line starting with ##SSHTM, wich must be the last one (excluding empty lines).
+
+My first idea was to encode them in an exportable json, but discovered that, being able to export that file, means being able to back up on firestore. Ideally, users should choose whether to use cloud capabilites or not, but with limited time, I should focus on one solution first.
