@@ -27,8 +27,8 @@ class scriptsBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: BlocProvider(
-        create: (context) => cubit_Scripts(),
+      
+        
         child: BlocBuilder<cubit_Scripts, scriptsState>(
           builder: (context, state) {
             if(state is scriptListNotLoadedState) {
@@ -60,7 +60,7 @@ class scriptsBody extends StatelessWidget {
             );
           }
         ),
-      )
+      
     );
   }
 }

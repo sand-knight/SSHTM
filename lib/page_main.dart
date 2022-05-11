@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/widget_page_Host.dart';
+import 'package:sshtm/Scripts/cubit_Scripts.dart';
 import 'package:sshtm/Scripts/widget_page_Scripts.dart';
 import 'Hosts/bloc_Host.dart';
 import "Hosts/object_Host.dart";
@@ -48,8 +49,15 @@ class _navPageState extends State<NavigableScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-        create: (context) => cubit_Hosts(HostList()),
+    return MultiBlocProvider(
+        providers: [
+          BlocProvider(
+            create: (context) => cubit_Hosts(HostList()),
+          ),
+          BlocProvider(
+            create: (context) => cubit_Scripts(),
+          )
+        ],
         child: MaterialApp(
             theme: ThemeData.dark(),
             title: 'Ciao',
@@ -77,6 +85,9 @@ class _navPageState extends State<NavigableScaffold> {
                   ],
                   onTap: updateSelectedTab,
                   currentIndex: selectedItem,
-                ))));
+                )
+            )
+          )
+    );
   }
 }

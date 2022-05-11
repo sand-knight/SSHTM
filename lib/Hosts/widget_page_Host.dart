@@ -41,12 +41,12 @@ class hostsAppBar extends StatelessWidget implements PreferredSizeWidget{
 Widget hostsBody = Center(
   child: BlocBuilder<cubit_Hosts, hostsState>(builder: (context, state) {
     return ListView(
-      children: List.generate(state.getList().length, (index) {
+      children: List.generate(state.list.length, (index) {
         if (index == 0) {
           //first element is android terminal
-          return AndroidTerminaTile(host: state.getList()[0] as AndroidHost);
+          return AndroidTerminaTile(host: state.list[0] as AndroidHost);
         } else {
-          return HostTile(host: state.getList()[index] as RemoteHost);
+          return HostTile(host: state.list[index] as RemoteHost);
         }
       }),
     );

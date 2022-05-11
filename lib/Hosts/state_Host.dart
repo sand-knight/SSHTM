@@ -1,9 +1,9 @@
 import 'object_Host.dart';
 
 abstract class hostsState {
-  final List<Host> list;
-  List<Host> getList() => list;
-  const hostsState(this.list);
+  final List<Host> _list;
+  List<Host> get list => _list;
+  const hostsState(this._list);
 }
 
 class hostAdddedState extends hostsState {
