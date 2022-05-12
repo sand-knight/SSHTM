@@ -1,28 +1,37 @@
+import 'dart:async';
+
 import 'package:pty/pty.dart';
+import 'package:sshtm/Executor/events_Execution.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Scripts/object_Script.dart';
 
 class Job {
 
   final Script _script;
+  Future<int>? _exitCode;
+  final StreamSink<ExecutionEvent> _eventStream;
 
-  factory Job({required Host host, required Script script}){
+  Future<int>? get exitCode => _exitCode;
+
+  factory Job({required Host host, required Script script, required StreamSink<ExecutionEvent> eventStream}) {
     
-    if(host is AndroidHost) return AndroidJob(script);
-    else return RemoteJob(host, script);
+    if(host is AndroidHost) return AndroidJob._(script, eventStream);
+    else return RemoteJob._(host, script, eventStream);
 
   }
 
-  Job._(this._script);
+  Job._(this._script, this._eventStream);
+
+  
 
 }
 
 class AndroidJob extends Job{
 
   late final PseudoTerminal _pty;
-  Future<int>? exitCode;
+//  Future<int>? exitCode;
 
-  AndroidJob(Script script) : super._(script);
+  AndroidJob._(Script script, StreamSink<ExecutionEvent> eventStream) : super._(script, eventStream);
 
   Future<void> start() async {
     print("Eseguo script");
@@ -30,7 +39,12 @@ class AndroidJob extends Job{
 
     _pty.out.listen((data) {print(data);});
 
-    exitCode=_pty.exitCode;
+    _exitCode=_pty.exitCode;
+
+    _pty.exitCode.then(
+      (value) {_eventStream.add(JobReturned_ExecutionEvent(this, value)); }
+      );
+    
   }
 
 }
@@ -39,6 +53,6 @@ class RemoteJob extends Job{
 
   final Host _host;
 
-  RemoteJob(this._host, Script script) : super._(script);
+  RemoteJob._(this._host, Script script, StreamSink<ExecutionEvent> eventStream) : super._(script, eventStream);
 
 }
