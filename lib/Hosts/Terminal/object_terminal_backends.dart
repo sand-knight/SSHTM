@@ -54,9 +54,9 @@ class RemoteTerminalBackend extends TerminalBackend {
   late final SSHSession _shell;
 
   final _exitCodeCompleter = Completer<
-      int>(); // prendi un completer e consegnagli il suo futuro? Ma siamo in Harry Potter?
+      int>();
   final _outStream =
-      StreamController<String>(); //TODO: studia future, stream, completer
+      StreamController<String>();
 
   RemoteTerminalBackend(this._host);
 

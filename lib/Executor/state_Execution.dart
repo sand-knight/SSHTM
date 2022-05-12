@@ -14,6 +14,6 @@ class RunningExecutionState extends ExecutionState {
   
 }
 
-class EptyQueueExecutionState extends ExecutionState{
-  EptyQueueExecutionState (List<Job> list) : super(list);
+class EmptyQueueExecutionState extends ExecutionState{
+  EmptyQueueExecutionState (List<Job> list) : super(list);
 }

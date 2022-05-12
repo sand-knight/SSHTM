@@ -1,10 +1,15 @@
+
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sshtm/Executor/bloc_Jobs.dart';
+import 'package:sshtm/Executor/events_Execution.dart';
 import 'package:sshtm/Hosts/widget_page_Host.dart';
 import 'package:sshtm/Scripts/cubit_Scripts.dart';
 import 'package:sshtm/Scripts/widget_page_Scripts.dart';
 import 'Hosts/bloc_Host.dart';
 import "Hosts/object_Host.dart";
+import "package:fluttertoast/fluttertoast.dart";
 
 enum Page { Hosts, Scripts, Actions, Tasks, Logs }
 
@@ -18,6 +23,19 @@ class NavigableScaffold extends StatefulWidget {
 class _navPageState extends State<NavigableScaffold> {
   // THE STATES
   int selectedItem = 0;
+
+  void setListenExecutionEvents( Stream<ExecutionEvent> eventStream){
+    eventStream.forEach(
+      (e) {
+        if (e is JobReturned_ExecutionEvent) {
+          Fluttertoast.showToast(  
+            msg: e.shortMessage,
+            toastLength: Toast.LENGTH_LONG,
+          );
+        }
+      }
+    );
+  }
 
   void updateSelectedTab(int index) {
     setState(() {
@@ -56,6 +74,12 @@ class _navPageState extends State<NavigableScaffold> {
           ),
           BlocProvider(
             create: (context) => cubit_Scripts(),
+          ),
+          BlocProvider(
+            create: (context) {
+              final bloc_Execution bloc = bloc_Execution();
+              setListenExecutionEvents(bloc.eventStream);
+              return bloc;},
           )
         ],
         child: MaterialApp(

@@ -43,18 +43,19 @@ class scriptTile extends StatelessWidget{
           ),
         ) ?? [];
 
-        StreamSink<ExecutionEvent> sink=BlocProvider.of<bloc_Execution>(context).eventStreamSink;
+        //StreamSink<ExecutionEvent> sink=BlocProvider.of<bloc_Execution>(context).eventStreamSink;
+        bloc_Execution exebloc=BlocProvider.of<bloc_Execution>(context);
+        print(selectedItems);
 
         selectedItems.forEach(
-          (element) => sink.add(
-            JobEnqueued_ExecutionEvent(
-              Job(
-                host: element,
-                script: _myScript,
-                eventStream: sink
-              )
-            )
-          )
+          (element){ 
+            Job(
+            host: element,
+            script: _myScript,
+            notifyTo: exebloc,
+            ).start();
+            
+          }
         );
 
       },

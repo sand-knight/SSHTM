@@ -2,8 +2,8 @@
 
 A new Flutter project for a class assignment. This app aims to manage connections to ssh servers, store scripts, execute rapid actions on defined servers, define event driven tasks, sort execution logs.
 
-Last test-able build: 21  Apr 2022 23:26
-What you can see: list of hosts, list of working terminals updated and saved on navigation, menu to add new Host. Useless list of scripts, read from Android/data/com.example.sshtm/files/Scripts
+Last test-able build: 13  May 2022 01.28
+What you can see: list of hosts, list of working terminals updated and saved on navigation, menu to add new Host. List of scripts, read from Android/data/com.example.sshtm/files/Scripts. On tap, can execute script on hosts (android only for now)
 
 
 
