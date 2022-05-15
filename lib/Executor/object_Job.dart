@@ -1,3 +1,5 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:async';
 import 'dart:io';
 
@@ -38,7 +40,7 @@ class Job {
 
 class AndroidJob extends Job{
 
-  late final PseudoTerminal _pty;
+  PseudoTerminal? _pty;
 //  Future<int>? exitCode;
 
   AndroidJob._(Script script, bloc_Execution eventStream) : super._(script, eventStream);
@@ -50,22 +52,51 @@ class AndroidJob extends Job{
     _eventStream.add(JobEnqueued_ExecutionEvent(this));
 
     final Directory appdata = await getExternalStorageDirectory() as Directory;
-    
-    _pty=PseudoTerminal.start(
-      "/system/bin/sh",
-      [_script.path],
-      workingDirectory: appdata.path,
-      environment: Platform.environment,
-      blocking: true
+    String interpreter=await _script.interpreter;
+    if (interpreter.isNotEmpty)
+    try{
+      print("trying to use interpreter from shebang: $interpreter");
+      _pty=PseudoTerminal.start(
+        interpreter,
+        [_script.path],
+        workingDirectory: appdata.path,
+        environment: Platform.environment,
+        blocking: true
       );
+    }catch(e){
+      try{
+        print("Didnt work. trying /bin/sh");
+        _pty=PseudoTerminal.start(
+        "/bin/sh",
+        [_script.path],
+        workingDirectory: appdata.path,
+        environment: Platform.environment,
+        blocking: true
+        );
+      }catch(i){
+        print ("Not even /system/bin/sh");
+        rethrow;
+      }
+    }
+    if (_pty==null){
+      print ("pty found null. trying /bin/sh");
+      _pty=PseudoTerminal.start(
+        "/bin/sh",
+        [_script.path],
+        workingDirectory: appdata.path,
+        environment: Platform.environment,
+        blocking: true
+      );
+    }
 
-    String firstLine=_script.name+" on Android exited with code ";
+    String firstLine=_script.name+" on Android: ";
     int secondLineLength=firstLine.length+2;
     String secondLine="";
-    _pty.init();
+    
+    _pty!.init();
 
     
-    _pty.out.listen(
+    _pty!.out.listen(
       (data) {
         print(data);
         
@@ -75,14 +106,17 @@ class AndroidJob extends Job{
       }
     );
 
-    _exitCode=_pty.exitCode;
+    _exitCode=_pty!.exitCode;
 
-    _pty.exitCode.then(
+    _pty!.exitCode.then(
       (value) {
         firstLine+=exitCode.toString();
-        secondLine=secondLine.substring(0,secondLineLength); //TODO toast message through event 
-        _eventStream.add(JobReturned_ExecutionEvent(this, value, firstLine+"\n"+secondLine)); }
-      );
+        if(secondLine.length>secondLineLength)
+          secondLine=secondLine.substring(0,secondLineLength);
+        
+        _eventStream.add(JobReturned_ExecutionEvent(this, value, firstLine+"\n"+secondLine.replaceAll("\n", " "))); 
+      }
+    );
     
   }
 

@@ -10,13 +10,7 @@ class Script {
   final String _name;
   late final String comment;
 
-  Script._(this._name, this._file);// : comment= await _retrieveComment();
- /* factory Script(String name, File file) async {
-    Script script = Script._(name, file);
-    script.comment= await script._retrieveComment();
-    return script;
-  }
-*/
+  Script._(this._name, this._file);
 
   static Future<Script> fetch(String name, File file) async {
     Script returnee= Script._(name, file);
@@ -45,6 +39,11 @@ class Script {
       rethrow;
     }
   }
+
+  Future<String> get interpreter async => await _retrieveShebang(_file);
+
+  
+
 
   Future<String> _retrieveComment() async {
     String temp="";
@@ -80,7 +79,7 @@ class Script {
           position--;
           await Raf.setPosition(position);
 
-          char = (await Raf.read(1)).elementAt(0); //read one char, which is an Integer
+          char = await Raf.readByte(); //read one char, which is an Integer
           codelist.add(char);
 
         }
@@ -109,7 +108,8 @@ class Script {
       
         if ( result ){
           if (codelist.isNotEmpty) {
-            temp=String.fromCharCodes(codelist).trim()+" "+temp;   //save the string
+            //temp=String.fromCharCodes(codelist).trim()+" "+temp;   //save the string
+            temp=utf8.decode(codelist).trim()+" "+temp;
             codelist= <int>[];                 //and empty the char list for next iteration
           }
         
@@ -127,9 +127,62 @@ class Script {
     }
   }
 
+  static Future<String> _retrieveShebang(File f) async {
+    List<int> shebang = "#!/".codeUnits;
+    List<int> line;
+    int NLcharcode = "\n".codeUnitAt(0);
+    int char, length, pos;
+    bool? result;
+
+    
+    try {
+      RandomAccessFile content = await f.open( mode : FileMode.read );
+      length=await f.length();
+      pos=0;
+
+      while(pos<length){
+        line=<int>[];
+        while ( pos<length && ( (char = await content.readByte()) != NLcharcode) ){
+
+          line.add(char);
+
+        }
+
+      
+        if (line.length>3){ //the line can contain a shebang
+          if( line[0]==shebang[0] ) { //it's a comment
+            if ( line[1]==shebang[1] ) { //it's a shebang!
+              content.close();
+              line.removeAt(0); //remove #
+              line.removeAt(0); //remove !
+              return utf8.decode(line);
+            }
+            //it's not a shebang. as it's a comment we may keep searching
+          }else{
+            content.close();
+            return ""; //it's not a comment. text started without shebang?
+          }
+        }else{ //in less then 3 char can only be either an empty line or a comment
+          if (line.length>0){
+            if (line[0]!=shebang[0]){ // not '#' it's text without shebang
+              content.close();
+              return "";
+            }
+          }
+        }
+      }
+    content.close();
+    return ""; //found nothing
+        
+    }catch (e){
+        print("Could not open file to evaluate");
+        rethrow;
+    } 
+
+  }
 
 
-  Future<String> get content async {
+  Future<String> get contentAsString async {
     try {
       //final File file = File(_pathname);
       Future<String> content = _file.readAsString();
@@ -140,6 +193,9 @@ class Script {
     }
   }
 }
+
+
+
 
 class ScriptList {
   List<Script> _list = <Script>[];
@@ -188,23 +244,13 @@ class ScriptList {
 
   }
 
-  //TODO Add from file
+  
   Future<bool> addScriptFromFile(List<File> toBeAdded) async {
-    bool strangeFile = false;
-    String shebang = "#!/bin/";
+    bool strangefile=false;
     for (File f in toBeAdded) {
       
-      /*try to get a glimpse of the file*/
-      try {
-        RandomAccessFile content = await f.open( mode : FileMode.read );
-        if ( String.fromCharCodes(await content.read(7)).startsWith(shebang) ) {
-          strangeFile = true;
-        }
-        content.close();
-      }catch (e){
-        print("Could not open file to evaluate");
-      } 
-
+      
+      strangefile=strangefile||(await Script._retrieveShebang(f)).isEmpty;
       /*try to create new file*/
       String name = f.path.split("/").last;
       String newpath = _scripdir.path + name;
@@ -218,7 +264,7 @@ class ScriptList {
       }
     }
 
-    return strangeFile;
+    return strangefile;
   }
 
   //TODO Add from text field
