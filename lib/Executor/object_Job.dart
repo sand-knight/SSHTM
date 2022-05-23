@@ -3,7 +3,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
+import 'dart:typed_data';
+import 'package:async/async.dart';
 import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
@@ -150,22 +151,21 @@ class RemoteJob extends Job{
 
 		final socket = await SSHSocket.connect(_host.address, _host.port );
 
-		bool passwordAlreadyRequested=false;
 
-		final client = SSHClient(
-			socket,
-			username: _host.user ,
-			onPasswordRequest: () {
-				if (!passwordAlreadyRequested){
-					passwordAlreadyRequested=true;	
-					return _host.password;
-				}else{
-					// TODO call a function to ask for password in UI
-					print("asked for password a second time. Test if it's related to failure in authentication");
-				}
-			},
-		);
-
+		final client;
+		try{
+			client = SSHClient(
+				socket,
+				username: _host.user ,
+				onPasswordRequest: () => _host.password,
+				
+			);
+		}catch(e){
+			final String message=e.toString();
+			_eventStream.add(JobReturned_ExecutionEvent(this, -1, "failed to execute\n"+message));
+			return;
+		}
+	
 		/*
 		 *	1) Create a temp file
 		 * 2) put script content
@@ -195,29 +195,45 @@ class RemoteJob extends Job{
 		 * 1) execute script
 		 * 2) get exit code
 		 */
-
+		
 		final String command=(await _script.interpreter)+" "+tempath;
-		final output=await client.run(command);
-		final code=await client.run("echo \$?");
-		print(utf8.decode(output));
-		final String exitCode=utf8.decode(code).replaceAll('\n', '');
+		final SSHSession executor= await client.execute(command);
+		
+		String data, secondLine="";
+
+		Stream<Uint8List> output = StreamGroup.merge([executor.stdout, executor.stderr]);
+		output.forEach(
+			(element) {
+				
+				data=utf8.decode(element);
+				if (secondLine.length<secondLineLength){
+					secondLine+=data;
+				}
+
+				print("$data");
+
+				// TODO data --> logs
+
+			}
+		);
+		
+		await executor.done;
+		final int exitCode=executor.exitCode!;
+		executor.close();
+		
 		
 		await client.run("rm $tempath");
 		client.close();
-
-		final String secondLine=utf8.decode(output.take(secondLineLength).toList(growable: false));
-		firstLine+=exitCode;
 
 		
 		await client.done;
 		await socket.close();
 
-		_eventStream.add(JobReturned_ExecutionEvent(this, int.parse(exitCode), firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…"));
-		
-
-		/*
-		 *	This code is silly. TODO use a stream to get away with something on disconnection
-		 */
+		if (secondLine.length>secondLineLength){
+					secondLine=secondLine.substring(0,secondLineLength);
+				}
+		firstLine+=exitCode.toString();
+		_eventStream.add(JobReturned_ExecutionEvent(this, exitCode, firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…"));
 		
 	}
 }
