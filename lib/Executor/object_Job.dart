@@ -1,8 +1,10 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:dartssh2/dartssh2.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pty/pty.dart';
@@ -14,118 +16,219 @@ import 'package:sshtm/Scripts/object_Script.dart';
 
 class Job {
 
-  final Script _script;
-  Future<int>? _exitCode;
-  //final StreamSink<ExecutionEvent> _eventStream;
-  final bloc_Execution _eventStream;
+	final Script _script;
+	Future<int>? _exitCode;
+	//final StreamSink<ExecutionEvent> _eventStream;
+	final bloc_Execution _eventStream;
 
-  Future<int>? get exitCode => _exitCode;
+	Future<int>? get exitCode => _exitCode;
 
-  factory Job({required Host host, required Script script, required bloc_Execution notifyTo}) {
-    
-    if(host is AndroidHost) return AndroidJob._(script, notifyTo);
-    else return RemoteJob._(host, script, notifyTo);
+	factory Job({required Host host, required Script script, required bloc_Execution notifyTo}) {
+	 
+	 if(host is AndroidHost) return AndroidJob._(script, notifyTo);
+	 else return RemoteJob._(host as RemoteHost, script, notifyTo);
 
-  }
+	}
 
-  Job._(this._script, this._eventStream);
+	Job._(this._script, this._eventStream);
 
-  Future<void> start() async{
-    throw Exception("You should not be here");
-  }
+	Future<void> start() async{
+	 throw Exception("You should not be here");
+	}
 
-  
+	
 
 }
 
+/* 
+ALT2 is an alternative mode in which we instantiate a normal login shell
+	and then we call the interpreter on the script. However in that mode
+	output is inconsistent for some reason. To try remove ALT1 lines and
+	uncomment ALT2 lines.
+*/
 class AndroidJob extends Job{
 
-  PseudoTerminal? _pty;
+	PseudoTerminal? _pty;
 //  Future<int>? exitCode;
 
-  AndroidJob._(Script script, bloc_Execution eventStream) : super._(script, eventStream);
+	AndroidJob._(Script script, bloc_Execution eventStream) : super._(script, eventStream);
 
-  @override
-  Future<void> start() async {
-    print("Eseguo script");
+	@override
+	Future<void> start() async {
+	 print("Eseguo script");
 
-    _eventStream.add(JobEnqueued_ExecutionEvent(this));
+	 _eventStream.add(JobEnqueued_ExecutionEvent(this));
 
-    final Directory appdata = await getExternalStorageDirectory() as Directory;
-    String interpreter=await _script.interpreter;
-    if (interpreter.isNotEmpty)
-    try{
-      print("trying to use interpreter from shebang: $interpreter");
-      _pty=PseudoTerminal.start(
-        interpreter,
-        [_script.path],
-        workingDirectory: appdata.path,
-        environment: Platform.environment,
-        blocking: true
-      );
-    }catch(e){
-      try{
-        print("Didnt work. trying /bin/sh");
-        _pty=PseudoTerminal.start(
-        "/bin/sh",
-        [_script.path],
-        workingDirectory: appdata.path,
-        environment: Platform.environment,
-        blocking: true
-        );
-      }catch(i){
-        print ("Not even /system/bin/sh");
-        rethrow;
-      }
-    }
-    if (_pty==null){
-      print ("pty found null. trying /bin/sh");
-      _pty=PseudoTerminal.start(
-        "/bin/sh",
-        [_script.path],
-        workingDirectory: appdata.path,
-        environment: Platform.environment,
-        blocking: true
-      );
-    }
+	 final Directory appdata = await getExternalStorageDirectory() as Directory;
+	 
+	 String interpreter=await _script.interpreter;
 
-    String firstLine=_script.name+" on Android: ";
-    int secondLineLength=firstLine.length+2;
-    String secondLine="";
-    
-    _pty!.init();
+	 if (interpreter.isEmpty) throw InterpreterNotUnderstood("interpreter string found empty");
+	 
+	 List<String> arguments=interpreter.split(' ');
+	 interpreter=arguments.first; // ALT1
+	 arguments.removeAt(0);
+	 arguments.add(_script.path);
+	 
+	 final File interpreterFile=File(interpreter);
+	 if (!interpreterFile.existsSync()) throw InterpreterNotUnderstood("interpreter not found in file system");
+	 
+	 
+	 // ALT2 String executeNreturn=interpreter+" "+_script.path+"; exit \$?\n";
 
-    
-    _pty!.out.listen(
-      (data) {
-        print(data);
-        
-        if(secondLine.length<secondLineLength){
-          secondLine+=data;
-        }
-      }
-    );
+	 try{
+		print("trying to use interpreter from shebang: $interpreter");
+		_pty=PseudoTerminal.start(
+			interpreter,
+			// ALT2 "/bin/sh",
+			arguments,
+			// ALT2 [],
+			workingDirectory: appdata.path,
+			environment: Platform.environment,
+			blocking: true
+		);
+		}catch(e){
+		
+			print("Didnt work.");
+			rethrow;
+		
+		}
+		if (_pty==null){
+			print ("pty found null. trying /bin/sh");
+			throw ExecutorException("pty found null");
+		}
 
-    _exitCode=_pty!.exitCode;
+	 String firstLine=_script.name+" on Android: ";
+	 // ALT2 int junkLength=executeNreturn.length*2+appdata.path.length+5;
+	 int secondLineLength=firstLine.length; // ALT2 +junkLength;
+	 String secondLine="";
+	 
+	 _pty!.init();
 
-    _pty!.exitCode.then(
-      (value) {
-        firstLine+=exitCode.toString();
-        if(secondLine.length>secondLineLength)
-          secondLine=secondLine.substring(0,secondLineLength);
-        
-        _eventStream.add(JobReturned_ExecutionEvent(this, value, firstLine+"\n"+secondLine.replaceAll("\n", " "))); 
-      }
-    );
-    
-  }
+	 // ALT2 _pty!.write(executeNreturn);
+	 
+	 
+	 _pty!.out.listen(
+		(data) {
+			print(data);
+			
+			if(secondLine.length<secondLineLength){
+			 secondLine+=data;
+			}
+		}
+	 );
+
+	 _exitCode=_pty!.exitCode;
+
+	 _pty!.exitCode.then(
+		(value) {
+			firstLine+=value.toString();
+
+			if(secondLine.length>secondLineLength)
+				secondLine=secondLine.substring(0, secondLineLength); // ALT1
+			// ALT2 secondLine=secondLine.substring(junkLenght,secondLineLength);
+			// ALT2 else secondLine=secondLine.substring(junkLenght);
+			
+			_eventStream.add(JobReturned_ExecutionEvent(this, value, firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…")); 
+		}
+	 );
+	 
+	}
 
 }
 
 class RemoteJob extends Job{
 
-  final Host _host;
+	final RemoteHost _host;
 
-  RemoteJob._(this._host, Script script, bloc_Execution eventStream) : super._(script, eventStream);
+	RemoteJob._(this._host, Script script, bloc_Execution eventStream) : super._(script, eventStream);
+ 
+	@override
+	Future<void> start() async{
 
+		_eventStream.add(JobEnqueued_ExecutionEvent(this));
+
+		final socket = await SSHSocket.connect(_host.address, _host.port );
+
+		bool passwordAlreadyRequested=false;
+
+		final client = SSHClient(
+			socket,
+			username: _host.user ,
+			onPasswordRequest: () {
+				if (!passwordAlreadyRequested){
+					passwordAlreadyRequested=true;	
+					return _host.password;
+				}else{
+					// TODO call a function to ask for password in UI
+					print("asked for password a second time. Test if it's related to failure in authentication");
+				}
+			},
+		);
+
+		/*
+		 *	1) Create a temp file
+		 * 2) put script content
+		 * 
+		 */
+		final String tempath= utf8.decode( await client.run('mktemp') ).replaceAll('\n', "");
+		final sftp = await client.sftp();
+		print("Hopefully created temp file in $tempath");
+		final remotescript = await sftp.open(
+			tempath,
+			mode: SftpFileOpenMode.truncate | SftpFileOpenMode.write
+			);
+
+		await remotescript.write(_script.file.openRead().cast());
+		await remotescript.close();
+		sftp.close();
+
+
+		/*
+		 * Utility on strings
+		 */
+		String firstLine = _script.name+" on "+_host.name+": ";
+		final int secondLineLength=firstLine.length;
+
+
+		/*
+		 * 1) execute script
+		 * 2) get exit code
+		 */
+
+		final String command=(await _script.interpreter)+" "+tempath;
+		final output=await client.run(command);
+		final code=await client.run("echo \$?");
+		print(utf8.decode(output));
+		final String exitCode=utf8.decode(code).replaceAll('\n', '');
+		
+		await client.run("rm $tempath");
+		client.close();
+
+		final String secondLine=utf8.decode(output.take(secondLineLength).toList(growable: false));
+		firstLine+=exitCode;
+
+		
+		await client.done;
+		await socket.close();
+
+		_eventStream.add(JobReturned_ExecutionEvent(this, int.parse(exitCode), firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…"));
+		
+
+		/*
+		 *	This code is silly. TODO use a stream to get away with something on disconnection
+		 */
+		
+	}
+}
+
+
+class ExecutorException implements Exception {
+	final String msg;
+	const ExecutorException(this.msg);
+	String toString() => 'Executor Exception: $msg';
+}
+
+class InterpreterNotUnderstood extends ExecutorException{
+	InterpreterNotUnderstood(String msg) : super(msg);
 }

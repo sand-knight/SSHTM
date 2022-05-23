@@ -21,3 +21,5 @@
 * [X] move cubit_scripts to top with multiblocprovider, or else, the bloc is destroyed at every page change. Furthermore, bloc is lazy, so you have no reason not to declare it early
 * [ ] include features from terminal/readme.md
 * [ ] think of a less redundant way to relay execution events
+* [ ] ssh executor is silly and might get blocked on disconnect. Using a shell resolves this and returns exit codes
+* [ ] No suck method dispose() in NewHostPage.build.<anonymous closure> (package:sshtm/Hosts/widget_page_new_host.dart:36)

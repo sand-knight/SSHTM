@@ -22,6 +22,7 @@ class Script {
   //GET
   String get name => _name;
   String get path => _file.path;
+  File get file => _file;
   //Future<String> get comment async{return await _comment;} //dart does not need silly getters
 
   /*set comment (String newComment){
