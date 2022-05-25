@@ -1,4 +1,6 @@
 
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
@@ -38,17 +40,47 @@ class hostsAppBar extends StatelessWidget implements PreferredSizeWidget{
   }
 }
 
-Widget hostsBody = Center(
-  child: BlocBuilder<cubit_Hosts, hostsState>(builder: (context, state) {
-    return ListView(
-      children: List.generate(state.list.length, (index) {
-        if (index == 0) {
-          //first element is android terminal
-          return AndroidTerminaTile(host: state.list[0] as AndroidHost);
-        } else {
-          return HostTile(host: state.list[index] as RemoteHost);
+class hostsBody extends StatelessWidget {
+  const hostsBody({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return  Center(
+      child: BlocBuilder<cubit_Hosts, hostsState>(
+        builder: (context, state) {
+          if(state is hostsNotLoadedState){
+            return FutureBuilder<void>(
+              future: BlocProvider.of<cubit_Hosts>(context).loadHosts(),
+              builder: (context, AsyncSnapshot<void> snapshot) {
+                if (!snapshot.hasData)
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                else return ListView(
+                  children: List.generate(state.list.length, (index) {
+                    if (index == 0) {
+                      //first element is android terminal
+                      return AndroidTerminaTile(host: state.list[0] as AndroidHost);
+                    } else {
+                      return HostTile(host: state.list[index] as RemoteHost);
+                    }
+                  }),
+                );
+              }
+            );
+          }
+          return ListView(
+            children: List.generate(state.list.length, (index) {
+              if (index == 0) {
+                //first element is android terminal
+                return AndroidTerminaTile(host: state.list[0] as AndroidHost);
+              } else {
+                return HostTile(host: state.list[index] as RemoteHost);
+              }
+            }),
+          );
         }
-      }),
+      ),
     );
-  }),
-);
+  }
+}

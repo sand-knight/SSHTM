@@ -58,7 +58,7 @@ class _navPageState extends State<NavigableScaffold> {
   ];
 
   List<Widget> ListaDeiCorpi = <Widget>[
-    hostsBody,
+    hostsBody(),
     scriptsBody(),
     Center(child: const Text('Qua dentro stanno le action')),
     Center(child: const Text('Qua dentro stanno le task')),
@@ -70,7 +70,7 @@ class _navPageState extends State<NavigableScaffold> {
     return MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => cubit_Hosts(HostList()),
+            create: (context) => cubit_Hosts(),
           ),
           BlocProvider(
             create: (context) => cubit_Scripts(),

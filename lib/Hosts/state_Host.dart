@@ -26,3 +26,7 @@ class hostTerminalRemovedState extends hostsState {
 class hostsLoadedState extends hostsState {
   hostsLoadedState(List<Host> list) : super(list);
 }
+
+class hostsNotLoadedState extends hostsState{
+  hostsNotLoadedState(List<Host> list) : super(list);
+}

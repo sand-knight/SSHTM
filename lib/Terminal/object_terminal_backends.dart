@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:sshtm/Hosts/key_chain.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:xterm/xterm.dart';
 import "package:pty/pty.dart";
@@ -72,13 +73,21 @@ class RemoteTerminalBackend extends TerminalBackend {
     final _sshOutput = StreamController<List<int>>();
     _sshOutput.stream.transform(utf8.decoder).listen(onWrite);
 
-    onWrite('connecting to ' + _host.name + ':'+ (_host.port.toString()) + '...');
+    onWrite('connecting to ' + _host.name + ':'+ (_host.port.toString()) + '...\n');
+
+    /* Authentication data */
+    List<SSHKeyPair>? keyPairs;
+    final KeyChain keyChain= _host.keyChain!; // TODO check the existence of this keychain. A method is needed for keyChain loss and SSHClient onUserInfoRequest
+    if (keyChain.Pem != null) keyPairs=SSHKeyPair.fromPem(keyChain.Pem!, keyChain.passphrase);
+
+    /* init streams */
+    final SSHSocket socket=await SSHSocket.connect(_host.address, _host.port, timeout: const Duration(seconds: 10));
 
     _client = SSHClient(
-      await SSHSocket.connect(_host.address, _host.port,
-          timeout: const Duration(seconds: 10)),
+      socket,
       username: _host.user,
-      onPasswordRequest: () => _host.password,
+      onPasswordRequest: () => keyChain.password, // don't need to know whether password is null, because in that case it is skipped
+      identities: keyPairs,
     );
 
     _shell = await _client.shell( //LateInitializationError: Field '_shell' has not been initialized

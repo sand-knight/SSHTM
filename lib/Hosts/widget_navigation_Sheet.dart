@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
-import 'package:sshtm/Hosts/Terminal/widget_page_Terminal.dart';
+import 'package:sshtm/Terminal/widget_page_Terminal.dart';
 
 class navigation_Sheet extends StatelessWidget {
   final Host selectedHost;

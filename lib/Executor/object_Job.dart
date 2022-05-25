@@ -12,6 +12,7 @@ import 'package:pty/pty.dart';
 import 'package:sshtm/Executor/bloc_Jobs.dart';
 import 'package:sshtm/Executor/events_Execution.dart';
 import 'package:sshtm/Executor/state_Execution.dart';
+import 'package:sshtm/Hosts/key_chain.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Scripts/object_Script.dart';
 
@@ -149,15 +150,21 @@ class RemoteJob extends Job{
 
 		_eventStream.add(JobEnqueued_ExecutionEvent(this));
 
-		final socket = await SSHSocket.connect(_host.address, _host.port );
+		final SSHSocket socket = await SSHSocket.connect(_host.address, _host.port );
 
 
-		final client;
+    List<SSHKeyPair>? keyPairs;
+    final KeyChain keyChain= _host.keyChain!; // TODO check the existence of this keychain. A method is needed for keyChain loss and SSHClient onUserInfoRequest
+    if (keyChain.Pem != null) keyPairs=SSHKeyPair.fromPem(keyChain.Pem!, keyChain.passphrase);
+
+
+		final SSHClient client;
 		try{
 			client = SSHClient(
 				socket,
 				username: _host.user ,
-				onPasswordRequest: () => _host.password,
+				onPasswordRequest: () => keyChain.password, //totally fine if it is null
+        identities: keyPairs,
 				
 			);
 		}catch(e){
@@ -216,7 +223,7 @@ class RemoteJob extends Job{
 
 			}
 		);
-		
+
 		await executor.done;
 		final int exitCode=executor.exitCode!;
 		executor.close();

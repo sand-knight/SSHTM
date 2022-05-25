@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sshtm/Hosts/Terminal/input_behavior_mobile_keystrokes.dart';
+import 'package:sshtm/Terminal/input_behavior_mobile_keystrokes.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
-import 'package:sshtm/Hosts/Terminal/object_terminal_backends.dart';
-import 'package:sshtm/Hosts/Terminal/widget_focusNode_behavior_mobile.dart';
+import 'package:sshtm/Terminal/object_terminal_backends.dart';
+import 'package:sshtm/Terminal/widget_focusNode_behavior_mobile.dart';
 import 'package:xterm/flutter.dart';
 import 'package:xterm/xterm.dart';
 

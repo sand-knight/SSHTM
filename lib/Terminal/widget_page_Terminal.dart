@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
-import 'package:sshtm/Hosts/Terminal/object_terminal_data.dart';
+import 'package:sshtm/Terminal/object_terminal_data.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
 
 class TerminalPage extends StatelessWidget {
