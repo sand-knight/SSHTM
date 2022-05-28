@@ -2,8 +2,11 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:json_theme/json_theme.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../Hosts/key_chain.dart';
@@ -12,12 +15,13 @@ class Settings {
 
 
 
-
+  late final ThemeData _theme;
   late final Directory _appData;
   late final Directory _logFolder;
 
   Directory get appDataFolder => _appData;
   Directory get logFolder => _logFolder;
+  ThemeData get theme => _theme;
 
   Future<void> retrieveData(bool fullApp) async {
 
@@ -78,6 +82,11 @@ class Settings {
     if (fullApp){
       
       /* Data necessary for full fledged app, like themedata */
+      //WidgetsFlutterBinding.ensureInitialized();
+
+      final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
+      final themeJson = jsonDecode(themeStr);
+      _theme = ThemeDecoder.decodeThemeData(themeJson)!;
 
     }
 

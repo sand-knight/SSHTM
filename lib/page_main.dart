@@ -108,13 +108,13 @@ class _navPageState extends State<NavigableScaffold> {
               return bloc;},
           )
         ],
-        child: MaterialApp(
-          theme: ThemeData.dark(),
-          home: BlocBuilder<cubit_Settings, settingsState>(
+        child: BlocBuilder<cubit_Settings, settingsState>(
           builder: (context, state) {
             if (state is settingsNotLoadedState){
               BlocProvider.of<cubit_Settings>(context).loadSettings(); 
-              return Column(
+              return MaterialApp(
+                theme: ThemeData.dark(),
+                home: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Center(
@@ -128,44 +128,47 @@ class _navPageState extends State<NavigableScaffold> {
                         style: TextStyle(
                           color: Colors.white,
                         )
-                        ),
+                      ),
                       
                     )
                   ],
-                
+                )
               );
             }
             else return
-          Scaffold(
-                appBar: (AppBarsList.elementAt(selectedItem)),
-                body: BodiesList.elementAt(selectedItem),
-                bottomNavigationBar: BottomNavigationBar(
-                  items: const [
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.monitor),
-                      label: "Hosts",
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.insert_drive_file),
-                      label: "Scripts",
-                    ),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.bolt), label: "Actions"),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.pending_actions),
-                      label: "Tasks",
-                    ),
-                    BottomNavigationBarItem(
-                        icon: Icon(Icons.book), label: "Logs"),
-                  ],
-                  onTap: updateSelectedTab,
-                  currentIndex: selectedItem,
+              MaterialApp(
+                theme: BlocProvider.of<cubit_Settings>(context).state.settings.theme,
+                home: Scaffold(
+                  appBar: (AppBarsList.elementAt(selectedItem)),
+                  body: BodiesList.elementAt(selectedItem),
+                  bottomNavigationBar: BottomNavigationBar(
+                    items: const [
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.monitor),
+                        label: "Hosts",
+                      ),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.insert_drive_file),
+                        label: "Scripts",
+                      ),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.bolt), label: "Actions"),
+                      BottomNavigationBarItem(
+                        icon: Icon(Icons.pending_actions),
+                        label: "Tasks",
+                      ),
+                      BottomNavigationBarItem(
+                          icon: Icon(Icons.book), label: "Logs"),
+                    ],
+                    onTap: updateSelectedTab,
+                    currentIndex: selectedItem,
+                  )
                 )
-            );
+              );
           }
-          )
-          )
-            )
+        )
+      )
     );
+    
   }
 }
