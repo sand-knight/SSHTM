@@ -1,12 +1,12 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
-import 'package:sshtm/Terminal/object_terminal_data.dart';
-import 'package:sshtm/Hosts/state_Host.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 
 class NewHostPage extends StatefulWidget {
-  NewHostPage({Key? key}) : super(key: key);
+  const NewHostPage({Key? key}) : super(key: key);
 
 
   @override
@@ -99,12 +99,10 @@ class _newHostFormState extends State<NewHostPage> {
                 enableSuggestions: false,
                 autocorrect: false,
                 onSaved: ((newValue) {
-                  // ignore: curly_braces_in_flow_control_structures
                   if (newValue != null && newValue.isNotEmpty) {
                     int _temp = int.parse(newValue);
                     if (_temp >= 0 && _temp < 65536) _port = _temp;
                     print('porto $_temp cioè $_port');
-                    // ignore: curly_braces_in_flow_control_structures
                   }
                   else {
                     _port = 0;

@@ -1,9 +1,10 @@
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 import 'dart:typed_data';
-import 'package:path_provider/path_provider.dart';
+import 'package:sshtm/Settings/cubit_settings.dart';
 
 class Script {
   final File _file;
@@ -133,7 +134,6 @@ class Script {
     List<int> line;
     int NLcharcode = "\n".codeUnitAt(0);
     int char, length, pos;
-    bool? result;
 
     
     try {
@@ -164,7 +164,7 @@ class Script {
             return ""; //it's not a comment. text started without shebang?
           }
         }else{ //in less then 3 char can only be either an empty line or a comment
-          if (line.length>0){
+          if (line.isNotEmpty){
             if (line[0]!=shebang[0]){ // not '#' it's text without shebang
               content.close();
               return "";
@@ -199,7 +199,11 @@ class Script {
 
 
 class ScriptList {
-  List<Script> _list = <Script>[];
+
+  ScriptList(this._settingsCubit);
+
+  final cubit_Settings _settingsCubit;
+  final List<Script> _list = <Script>[];
 
   List<Script> get list => _list;
 
@@ -207,16 +211,16 @@ class ScriptList {
 
   Future<void> load() async {
     /* Discovery this' app folder
-      Cast is necessary because getExternalStor... is supported onli on Android
+      Cast is necessary because getExternalStor... is supported only on Android
       and will generate exception on other platforms
     */
-
-    final Directory appdata = await getExternalStorageDirectory() as Directory;
+    print(_settingsCubit.state);
+    Directory appdata=_settingsCubit.state.settings.appDataFolder;
     _scripdir = Directory.fromRawPath(
         Uint8List.fromList(utf8.encode(appdata.path + "/Scripts")));
     print(_scripdir.path);
     if (!(await _scripdir.exists())) {
-      /* folders does not exist: create it and exit, because it's empty*/
+      /* folder does not exist: create it and exit, because it's empty*/
       try {
         _scripdir.create();
         return;

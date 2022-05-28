@@ -6,33 +6,36 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:async/async.dart';
 import 'package:dartssh2/dartssh2.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:pty/pty.dart';
-import 'package:sshtm/Executor/bloc_Jobs.dart';
-import 'package:sshtm/Executor/events_Execution.dart';
-import 'package:sshtm/Executor/state_Execution.dart';
 import 'package:sshtm/Hosts/key_chain.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Scripts/object_Script.dart';
+import 'package:sshtm/Settings/object_settings_DataStruct.dart';
 
 class Job {
 
-	final Script _script;
-	Future<int>? _exitCode;
-	//final StreamSink<ExecutionEvent> _eventStream;
-	final bloc_Execution _eventStream;
+  final File _logfile;
+  final Script _script;
+	late final Future<int> _exitCode;
+  late final Future<String> _shortMessage;
+  final _exitCodeCompleter = Completer<int>();
+  final _shortMessageCompleter = Completer<String>();
+  //Completer
+	
+	Future<int> get exitCode => _exitCode;
+  Future<String> get shortMessage => _shortMessage;
 
-	Future<int>? get exitCode => _exitCode;
-
-	factory Job({required Host host, required Script script, required bloc_Execution notifyTo}) {
+	factory Job({required Host host, required Script script, required File logfile, required Settings settings}) {
 	 
-	 if(host is AndroidHost) return AndroidJob._(script, notifyTo);
-	 else return RemoteJob._(host as RemoteHost, script, notifyTo);
+	 if(host is AndroidHost) return AndroidJob._(script, logfile, settings);
+	 else return RemoteJob._(host as RemoteHost, script, logfile);
 
 	}
 
-	Job._(this._script, this._eventStream);
+	Job._(this._script, this._logfile){
+    _shortMessage=_shortMessageCompleter.future;
+    _exitCode=_exitCodeCompleter.future;
+  }
 
 	Future<void> start() async{
 	 throw Exception("You should not be here");
@@ -49,80 +52,89 @@ ALT2 is an alternative mode in which we instantiate a normal login shell
 	uncomment ALT2 lines.
 */
 class AndroidJob extends Job{
-
+  final Settings _settings;
 	PseudoTerminal? _pty;
 //  Future<int>? exitCode;
 
-	AndroidJob._(Script script, bloc_Execution eventStream) : super._(script, eventStream);
+	AndroidJob._(Script script, File logFile, Settings settings)
+   : _settings=settings, super._(script, logFile);
 
 	@override
 	Future<void> start() async {
-	 print("Eseguo script");
+	  print("Eseguo script");
 
-	 _eventStream.add(JobEnqueued_ExecutionEvent(this));
+	  //---------------------------------------------  PTY PARAMETERS CONTROL
+	  String interpreter=await _script.interpreter;
 
-	 final Directory appdata = await getExternalStorageDirectory() as Directory;
+	  if (interpreter.isEmpty) throw InterpreterNotUnderstood("interpreter string found empty");
 	 
-	 String interpreter=await _script.interpreter;
-
-	 if (interpreter.isEmpty) throw InterpreterNotUnderstood("interpreter string found empty");
-	 
-	 List<String> arguments=interpreter.split(' ');
-	 interpreter=arguments.first; // ALT1
-	 arguments.removeAt(0);
-	 arguments.add(_script.path);
-	 
-	 final File interpreterFile=File(interpreter);
-	 if (!interpreterFile.existsSync()) throw InterpreterNotUnderstood("interpreter not found in file system");
-	 
-	 
-	 // ALT2 String executeNreturn=interpreter+" "+_script.path+"; exit \$?\n";
-
-	 try{
-		print("trying to use interpreter from shebang: $interpreter");
-		_pty=PseudoTerminal.start(
-			interpreter,
-			// ALT2 "/bin/sh",
-			arguments,
-			// ALT2 [],
-			workingDirectory: appdata.path,
-			environment: Platform.environment,
-			blocking: true
-		);
+    List<String> arguments=interpreter.split(' ');
+    interpreter=arguments.first; // ALT1
+    arguments.removeAt(0);
+    arguments.add(_script.path);
+    
+    final File interpreterFile=File(interpreter);
+    if (!interpreterFile.existsSync()) throw InterpreterNotUnderstood("interpreter not found in file system");
+    
+    final String tempstring=_settings.appDataFolder.path;
+    // ALT2 String executeNreturn=interpreter+" "+_script.path+"; exit \$?\n";
+    print ( "try $interpreter on $arguments in $tempstring");
+	  try{
+      print("trying to use interpreter from shebang: $interpreter");
+      _pty=PseudoTerminal.start(
+        interpreter,
+        // ALT2 "/bin/sh",
+        arguments,
+        // ALT2 [],
+        workingDirectory: _settings.appDataFolder.path,
+        environment: Platform.environment,
+        blocking: true
+      );
 		}catch(e){
 		
-			print("Didnt work.");
-			rethrow;
+			final String message=e.toString();
+			_exitCodeCompleter.complete(-1);
+      _shortMessageCompleter.complete(message);
+			return;
 		
 		}
 		if (_pty==null){
-			print ("pty found null. trying /bin/sh");
-			throw ExecutorException("pty found null");
+			_exitCodeCompleter.complete(-1);
+      _shortMessageCompleter.complete("Pty Exception: pty found null");
+			return;
 		}
 
+    /* init output variables  */ //-------------------- OUTPUT
 	 String firstLine=_script.name+" on Android: ";
 	 // ALT2 int junkLength=executeNreturn.length*2+appdata.path.length+5;
 	 int secondLineLength=firstLine.length; // ALT2 +junkLength;
 	 String secondLine="";
+
+    final IOSink outputlog=_logfile.openWrite(mode: FileMode.append);
+
+
 	 
-	 _pty!.init();
+	 _pty!.init(); // <---------------------------------- INIT
 
 	 // ALT2 _pty!.write(executeNreturn);
 	 
 	 
-	 _pty!.out.listen(
+	 _pty!.out.listen( //<------------------------------ output subscription
 		(data) {
 			print(data);
 			
+      outputlog.add(utf8.encode(data));
+
 			if(secondLine.length<secondLineLength){
 			 secondLine+=data;
 			}
 		}
 	 );
 
-	 _exitCode=_pty!.exitCode;
+	 _exitCodeCompleter.complete(_pty!.exitCode);
+   
 
-	 _pty!.exitCode.then(
+	 _exitCode.then(
 		(value) {
 			firstLine+=value.toString();
 
@@ -130,8 +142,9 @@ class AndroidJob extends Job{
 				secondLine=secondLine.substring(0, secondLineLength); // ALT1
 			// ALT2 secondLine=secondLine.substring(junkLenght,secondLineLength);
 			// ALT2 else secondLine=secondLine.substring(junkLenght);
+
+			_shortMessageCompleter.complete(firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…");
 			
-			_eventStream.add(JobReturned_ExecutionEvent(this, value, firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…")); 
 		}
 	 );
 	 
@@ -143,15 +156,15 @@ class RemoteJob extends Job{
 
 	final RemoteHost _host;
 
-	RemoteJob._(this._host, Script script, bloc_Execution eventStream) : super._(script, eventStream);
+	RemoteJob._(this._host, Script script, File logfile) : super._(script, logfile);
  
 	@override
 	Future<void> start() async{
 
-		_eventStream.add(JobEnqueued_ExecutionEvent(this));
+
+    //------------------------------------------  SSH INITIALIZATION
 
 		final SSHSocket socket = await SSHSocket.connect(_host.address, _host.port );
-
 
     List<SSHKeyPair>? keyPairs;
     final KeyChain keyChain= _host.keyChain!; // TODO check the existence of this keychain. A method is needed for keyChain loss and SSHClient onUserInfoRequest
@@ -169,7 +182,8 @@ class RemoteJob extends Job{
 			);
 		}catch(e){
 			final String message=e.toString();
-			_eventStream.add(JobReturned_ExecutionEvent(this, -1, "failed to execute\n"+message));
+			_exitCodeCompleter.complete(-1);
+      _shortMessageCompleter.complete(message);
 			return;
 		}
 	
@@ -208,26 +222,26 @@ class RemoteJob extends Job{
 		
 		String data, secondLine="";
 
+    IOSink outputlog=_logfile.openWrite(mode: FileMode.append);
+
 		Stream<Uint8List> output = StreamGroup.merge([executor.stdout, executor.stderr]);
 		output.forEach(
-			(element) {
-				
+			(element) { //<---------------------------------------------  SUBSCRIBE TO OUTPUT
+				outputlog.add(element.toList());
 				data=utf8.decode(element);
 				if (secondLine.length<secondLineLength){
 					secondLine+=data;
 				}
 
-				print("$data");
-
-				// TODO data --> logs
+				print(data);
 
 			}
 		);
 
 		await executor.done;
-		final int exitCode=executor.exitCode!;
+    final int exitCode=executor.exitCode!;
+		_exitCodeCompleter.complete(exitCode);
 		executor.close();
-		
 		
 		await client.run("rm $tempath");
 		client.close();
@@ -240,7 +254,8 @@ class RemoteJob extends Job{
 					secondLine=secondLine.substring(0,secondLineLength);
 				}
 		firstLine+=exitCode.toString();
-		_eventStream.add(JobReturned_ExecutionEvent(this, exitCode, firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…"));
+		
+    _shortMessageCompleter.complete(firstLine+"\n"+secondLine.replaceAll("\n", " ")+"…");
 		
 	}
 }
@@ -249,7 +264,8 @@ class RemoteJob extends Job{
 class ExecutorException implements Exception {
 	final String msg;
 	const ExecutorException(this.msg);
-	String toString() => 'Executor Exception: $msg';
+	@override
+  String toString() => 'Executor Exception: $msg';
 }
 
 class InterpreterNotUnderstood extends ExecutorException{

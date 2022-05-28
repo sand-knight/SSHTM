@@ -54,8 +54,7 @@ class RemoteTerminalBackend extends TerminalBackend {
   late final SSHClient _client;
   late final SSHSession _shell;
 
-  final _exitCodeCompleter = Completer<
-      int>();
+  final _exitCodeCompleter = Completer<int>();
   final _outStream =
       StreamController<String>();
 
@@ -117,5 +116,6 @@ class RemoteTerminalBackend extends TerminalBackend {
     _shell.close();
   }
 
+  @override
   void ackProcessed() {}
 }

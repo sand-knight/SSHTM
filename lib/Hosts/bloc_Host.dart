@@ -5,12 +5,15 @@ import 'package:sshtm/Hosts/state_Host.dart';
 
 class cubit_Hosts extends Cubit<hostsState> {
   HostList _localList; // <-- Istanza  locale della lista
-
-  factory cubit_Hosts() {
-    return cubit_Hosts._(HostList());
+  
+  /*
+  factory cubit_Hosts(settingsState settings) {
+    return cubit_Hosts._(HostList(settings));
 
   }
-  cubit_Hosts._(HostList list) : _localList=list, super(hostsNotLoadedState(list.list));
+  */
+  
+  cubit_Hosts(HostList list) : _localList=list, super(hostsNotLoadedState(list.list));
 
   void addHost(Host newhost) async {
     await _localList.add(newhost);

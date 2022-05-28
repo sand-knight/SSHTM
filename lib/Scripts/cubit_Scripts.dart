@@ -20,11 +20,12 @@ class cubit_Scripts extends Cubit<scriptsState> {
         super(scriptListNotLoadedState(_localList.list));
 */
 
-  factory cubit_Scripts() {
-    return cubit_Scripts._(ScriptList());
+/*  factory cubit_Scripts(settingsState settings) {
+    return cubit_Scripts._(ScriptList(settings));
 
   }
-  cubit_Scripts._(ScriptList list) : _localList=list, super(scriptListNotLoadedState(list.list));
+*/
+  cubit_Scripts(ScriptList list) : _localList=list, super(scriptListNotLoadedState(list.list));
   
   Future<void> loadScriptList() async {
     await _localList.load();

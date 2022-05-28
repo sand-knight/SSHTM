@@ -1,16 +1,14 @@
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:multi_select_flutter/dialog/mult_select_dialog.dart';
 import 'package:multi_select_flutter/multi_select_flutter.dart';
 import 'package:sshtm/Executor/bloc_Jobs.dart';
-import 'package:sshtm/Executor/events_Execution.dart';
-import 'package:sshtm/Executor/object_Job.dart';
+import 'package:sshtm/Executor/object_Job_Controller.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Scripts/object_Script.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
+import 'package:sshtm/Settings/cubit_settings.dart';
 
 class scriptTile extends StatelessWidget{
   const scriptTile({Key? key, required Script script}) : 
@@ -23,7 +21,7 @@ class scriptTile extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      contentPadding: EdgeInsets.all(10),
+      contentPadding: const EdgeInsets.all(10),
       title: Text(_myScript.name) ,
       //isThreeLine:
       onTap: () async {
@@ -43,21 +41,15 @@ class scriptTile extends StatelessWidget{
           ),
         ) ?? [];
 
-        //StreamSink<ExecutionEvent> sink=BlocProvider.of<bloc_Execution>(context).eventStreamSink;
-        bloc_Execution exebloc=BlocProvider.of<bloc_Execution>(context);
         print(selectedItems);
 
-        selectedItems.forEach(
-          (element){ 
-            Job(
-            host: element,
-            script: _myScript,
-            notifyTo: exebloc,
-            ).start();
-            
-          }
-        );
-
+        Job_Controller(
+          hosts: selectedItems,
+          script: _myScript,
+          notifyTo: BlocProvider.of<bloc_Execution>(context),
+          settings: BlocProvider.of<cubit_Settings>(context).state.settings,
+        ).start();
+      
       },
 
       

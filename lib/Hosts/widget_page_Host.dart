@@ -49,38 +49,26 @@ class hostsBody extends StatelessWidget {
       child: BlocBuilder<cubit_Hosts, hostsState>(
         builder: (context, state) {
           if(state is hostsNotLoadedState){
-            return FutureBuilder<void>(
-              future: BlocProvider.of<cubit_Hosts>(context).loadHosts(),
-              builder: (context, AsyncSnapshot<void> snapshot) {
-                if (!snapshot.hasData)
-                  return const Center(
+            BlocProvider.of<cubit_Hosts>(context).loadHosts();
+            return const Center(
                     child: CircularProgressIndicator(),
-                  );
-                else return ListView(
-                  children: List.generate(state.list.length, (index) {
-                    if (index == 0) {
-                      //first element is android terminal
-                      return AndroidTerminaTile(host: state.list[0] as AndroidHost);
-                    } else {
-                      return HostTile(host: state.list[index] as RemoteHost);
-                    }
-                  }),
-                );
-              }
             );
-          }
-          return ListView(
-            children: List.generate(state.list.length, (index) {
-              if (index == 0) {
-                //first element is android terminal
-                return AndroidTerminaTile(host: state.list[0] as AndroidHost);
-              } else {
-                return HostTile(host: state.list[index] as RemoteHost);
+
+          }else return ListView(
+            children: List.generate(
+              state.list.length,
+              (index) {
+                if (index == 0) {
+                  //first element is android terminal
+                  return AndroidTerminaTile(host: state.list[0] as AndroidHost);
+                } else {
+                  return HostTile(host: state.list[index] as RemoteHost);
+                }
               }
-            }),
+            ),
           );
         }
-      ),
+      )
     );
   }
 }

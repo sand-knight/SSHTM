@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:sshtm/Hosts/key_chain.dart';
+import 'package:sshtm/Settings/cubit_settings.dart';
 import 'package:sshtm/Terminal/object_terminal_data.dart';
 
 class noSuchElementException implements Exception {
@@ -13,7 +12,7 @@ class noSuchElementException implements Exception {
 }
 
 abstract class Host {
-  List<TerminalData> _openedTerminals = <TerminalData>[];
+  final List<TerminalData> _openedTerminals = <TerminalData>[];
 
   List<TerminalData> openedTerminals() => _openedTerminals;
 
@@ -123,6 +122,12 @@ class RemoteHost extends Host {
 }
 
 class HostList {
+
+  HostList (this._settingsCubit){
+    list.add(AndroidHost());
+  }
+
+  final cubit_Settings _settingsCubit;
   final List<Host> _list = <Host>[];
   late final File _jsonFile;
   List<Host> get list => _list;
@@ -142,9 +147,6 @@ class HostList {
     return this;
   }
 
-  HostList() {
-    list.add(AndroidHost());
-  }
 
   Future<void> store() async {
     List<Host> toBeSaved=_list.skip(1).toList();
@@ -156,7 +158,7 @@ class HostList {
     /*
      * Get host list
      */
-    final Directory appdata = await getExternalStorageDirectory() as Directory;
+    Directory appdata=_settingsCubit.state.settings.appDataFolder;
     _jsonFile = File(appdata.path+"Hosts.json");
     if (!(await _jsonFile.exists())){
       await _jsonFile.create();

@@ -23,5 +23,6 @@
 * [X] ssh executor is silly and might get blocked on disconnect. Using a shell resolves this and returns exit codes
 * [X] No suck method dispose() in NewHostPage.build.<anonymous closure> (package:sshtm/Hosts/widget_page_new_host.dart:36)
 * [ ] In object_terminal_backends and object_job pass a user interaction function to resolve keychain losses or onUserInputRequest from SSHClient
-* [ ] LOGS
-* [ ] splash screen while waiting for hive
+* [X] LOGS
+* [ ] splash screen
+* [X] remove futurebuilder in widget_screen

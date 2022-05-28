@@ -26,41 +26,23 @@ class scriptsBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      
-        
-        child: BlocBuilder<cubit_Scripts, scriptsState>(
-          builder: (context, state) {
-            if(state is scriptListNotLoadedState) {
-              return FutureBuilder<void>(
-                future: BlocProvider.of<cubit_Scripts>(context).loadScriptList(),
-                builder: (context, AsyncSnapshot<void> snapshot) {
-                  if (!snapshot.hasData) 
-                    return const Center(
-                    child: CircularProgressIndicator(),
-                    );
-                  else return ListView(
-                    children: List.generate(
-                      state.list.length,
-                      (index) => scriptTile(
-                        script: state.list[index]),
-                  
-                    )
+    return Center( 
+      child: BlocBuilder<cubit_Scripts, scriptsState>(
+        builder: (context, state) {
+          if(state is scriptListNotLoadedState) {
+            BlocProvider.of<cubit_Scripts>(context).loadScriptList();
+            return const Center(
+                  child: CircularProgressIndicator(),
                   );
-                },
-              );
-            }
-            return ListView(
-              children: List.generate(
-                state.list.length,
-                  (index) => scriptTile(
-                      script: state.list[index]),
-                  
-              )
-            );
-          }
-        ),
-      
+          }else return ListView(
+            children: List.generate(
+              state.list.length,
+              (index) => scriptTile(
+                script: state.list[index]),
+            )
+          );
+        },
+      )
     );
   }
 }
