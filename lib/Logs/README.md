@@ -1,0 +1,1 @@
+Logs are a byproduct of a job. For now no logics here, just the window to list them.

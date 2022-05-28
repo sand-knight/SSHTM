@@ -159,12 +159,13 @@ class HostList {
      * Get host list
      */
     Directory appdata=_settingsCubit.state.settings.appDataFolder;
-    _jsonFile = File(appdata.path+"Hosts.json");
+    _jsonFile = File(appdata.path+"/Hosts.json");
     if (!(await _jsonFile.exists())){
       await _jsonFile.create();
       return;
     }
     String Json=_jsonFile.readAsStringSync();
+    if(Json.isEmpty) return;
     final collection=jsonDecode(Json) as List;
     Iterable<Host> readHosts=collection.map((e) => RemoteHost.fromJson(e));
     _list.addAll(readHosts);

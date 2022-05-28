@@ -30,7 +30,13 @@ class scriptTile extends StatelessWidget{
           builder: (context) => BlocBuilder<cubit_Hosts, hostsState>(
             bloc: BlocProvider.of<cubit_Hosts>(context),
             builder: (context, state) {
+              ThemeData data= BlocProvider.of<cubit_Settings>(context).state.settings.theme;
               return MultiSelectDialog<Host>(
+                checkColor: data.colorScheme.inversePrimary,
+                selectedColor: data.colorScheme.secondary,
+                backgroundColor: data.dialogBackgroundColor,
+                title: Text("Select Hosts to run ${_myScript.name}"),
+                searchable: true,
                 initialValue: const [],
                 items: List.generate(
                   state.list.length,

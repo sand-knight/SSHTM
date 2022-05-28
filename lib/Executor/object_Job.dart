@@ -48,7 +48,7 @@ class Job {
 /* 
 ALT2 is an alternative mode in which we instantiate a normal login shell
 	and then we call the interpreter on the script. However in that mode
-	output is inconsistent for some reason. To try remove ALT1 lines and
+	output is inconsistent for some reason. To try, remove ALT1 lines and
 	uncomment ALT2 lines.
 */
 class AndroidJob extends Job{

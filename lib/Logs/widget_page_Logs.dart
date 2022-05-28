@@ -4,6 +4,8 @@
 import 'package:android_intent_plus/android_intent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_text_viewer/model/text_viewer.dart';
+import 'package:flutter_text_viewer/screen/text_viewer_page.dart';
 import 'dart:io';
 import 'package:sshtm/Settings/cubit_settings.dart';
 
@@ -94,33 +96,65 @@ class LogBodyState extends State<LogBody> {
             child: CircularProgressIndicator(),
             );
         }
-        else return ListView.builder(
-          itemCount: asyncsnapshot.data!.length,// _directorylist.length,
-          itemBuilder: (context, index) {
-            FileSystemEntity element= asyncsnapshot.data!.elementAt(index);
-            if ( element is File )
-              return Card(
-                child: ListTile(
-                  title: Text(element.path.split('/').last),
-                  leading: const Icon(Icons.text_snippet),
-                  trailing: const Icon(Icons.delete),
-                )
-              );
-            else if (element is Directory)
-              return Card(
-                child: ListTile(
-                  title: Text(element.path.split('/').last),
-                  leading: const Icon(Icons.folder),
-                  trailing: const Icon(Icons.delete),
-                )
-              );
-            else return Card(
+        else return Column( 
+          children: [
+            Card(
               child: ListTile(
-                title: Text(element.path.split('/').last),
-                leading: const Icon(Icons.question_mark)
+                enabled: _currentFolder.path!=_logFolder.path,
+                title: const Text("Up"),
+                leading: const Icon(Icons.arrow_upward),
+                onTap: () {
+                  if (_currentFolder.path!=_logFolder.path){
+                    changeFolder(_currentFolder.parent);
+                  }
+                }
               )
-            );
-          } ,
+            ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: asyncsnapshot.data!.length,// _directorylist.length,
+                itemBuilder: (context, index) {
+                  FileSystemEntity element= asyncsnapshot.data!.elementAt(index);
+                  if ( element is File )
+                    return Card(
+                      child: ListTile(
+                        title: Text(element.path.split('/').last),
+                        leading: const Icon(Icons.text_snippet),
+                        trailing: const Icon(Icons.delete),
+                        onTap: () async{
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context){
+                                return TextViewerPage(
+                                  textViewer: TextViewer.file(element.path),
+                                  showSearchAppBar: true,
+                                  );
+                              }
+                            ),
+                          );
+                        },
+                      )
+                    );
+                  else if (element is Directory)
+                    return Card(
+                      child: ListTile(
+                        title: Text(element.path.split('/').last),
+                        leading: const Icon(Icons.folder),
+                        trailing: const Icon(Icons.delete),
+                        onTap: () => changeFolder(element),
+                      )
+                    );
+                  else return Card(
+                    child: ListTile(
+                      title: Text(element.path.split('/').last),
+                      leading: const Icon(Icons.question_mark)
+                    )
+                  );
+                } ,
+              )
+            )
+          ]
         );
       }
     );
