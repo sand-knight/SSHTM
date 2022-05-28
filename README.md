@@ -2,12 +2,13 @@
 
 A new Flutter project for a class assignment. This app aims to manage connections to ssh servers, store scripts, execute rapid actions on defined servers, define event driven tasks, sort execution logs.
 
-Last test-able build: 13  May 2022 01.28
-What you can see: list of hosts, list of working terminals updated and saved on navigation, menu to add new Host. List of scripts, read from Android/data/com.example.sshtm/files/Scripts. On tap, can execute script on hosts (android only for now)
+Last test-able build: 28  May 2022 16:45
+What you can do: add hosts, open terminals, execute scripts on selected hosts, visualize logs, open logs folder with external file manager. Everything is in Android/data/[app]/.
 
 
 
-https://user-images.githubusercontent.com/79469450/163856892-c35ab039-1d33-461c-bbdc-3c72e9256770.mp4
+https://user-images.githubusercontent.com/79469450/170831504-666c4c84-adb0-4e09-a9b4-0a055d724b7f.mp4
+
 
 
 
@@ -27,11 +28,20 @@ The state of the main scaffold is the last visited section; every section has a 
 Cubit to manage `<Host< Terminal[] >>[]` (1) is "global" (wraps Material App) because many routes are going need the state of the hosts.
 Terminals are saved from route change by holding a reference to the terminal view. The terminal page is stateless.
 
-Discovered that bloc is lazy: there is no reason not to create a bloc early in the tree.
+Discovered that it is necessary to have an unloaded state to emulate futurebuilder with bloc.
+
+Another Cubit is responsible for fetching scripts.
+
+A bloc exposes the queue of running scripts and relays running events, for toasts and notifications to listen.
+
+The above are children of a settings cubit which loads data needed by both UI, data structures and logics.
+
 
 ### Diary of storage choices
 
 Script are actual files stored inside Android/data/com.example.sshtm/files/Scripts. Their name is their actual filename, their comment is
 the commented line starting with ##SSHTM, wich must be the last one (excluding empty lines).
 
-My first idea was to encode them in an exportable json, but discovered that, being able to export that file, means being able to back up on firestore. Ideally, users should choose whether to use cloud capabilites or not, but with limited time, I should focus on one solution first.
+The list of hosts is encoded in an exportable json. Being able to export that file, might mean being able to back up on firestore. Ideally, users should choose whether to use cloud capabilites or not, but with limited time, I should focus on one solution first.
+
+Scripts and logs are text files accessible easily with a file manager.
