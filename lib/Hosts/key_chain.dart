@@ -14,4 +14,6 @@ class KeyChain extends HiveObject{
   final String? passphrase;
 
   KeyChain({String? password, String? Pem, String? passphrase}) : this.password=password,  this.Pem=Pem, this.passphrase=passphrase;
+
+  KeyChain get clone => KeyChain(password: password, Pem: Pem, passphrase: passphrase);
 }

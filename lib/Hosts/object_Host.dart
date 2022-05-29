@@ -1,9 +1,8 @@
-import 'dart:convert';
-import 'dart:io';
+// ignore_for_file: curly_braces_in_flow_control_structures
+
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 import 'package:sshtm/Hosts/key_chain.dart';
-import 'package:sshtm/Settings/cubit_settings.dart';
+import 'package:sshtm/Hosts/repository_host.dart';
 import 'package:sshtm/Terminal/object_terminal_data.dart';
 
 class noSuchElementException implements Exception {
@@ -48,9 +47,10 @@ class RemoteHost extends Host {
   final String _address;
   final int _port;
   final String _user;
+  KeyChain? _keychain;
   
 
-  RemoteHost._(this._name, this._address, this._port, this._user) {
+  RemoteHost._(this._name, this._address, this._port, this._user, this._keychain) {
     /* generate unique id */
     //this._ID = this.hashCode;
 
@@ -62,17 +62,15 @@ class RemoteHost extends Host {
   String get address => _address;
   int get port => _port;
   String get user => _user;
-  KeyChain? get keyChain {
-    final keyVault = Hive.box<KeyChain>("keyVault");
-    final KeyChain? answer = keyVault.get(hashCode);
-    final String? password = answer?.password;
-    print("retrieved $password into $hashCode");
-    return answer;
-    
+  KeyChain? get keyChain => _keychain;
+  set keyChain(KeyChain? keyChain) {
+    _keychain=keyChain?.clone;
   }
+ 
+  
 
   factory RemoteHost.fromJson(dynamic json) {
-    return RemoteHost._(json['name'] as String, json['address'] as String, json['port'] as int, json['user'] as String);
+    return RemoteHost._(json['name'] as String, json['address'] as String, json['port'] as int, json['user'] as String, null);
   }
 
   factory RemoteHost({String? name, required String address, required int port,
@@ -81,18 +79,12 @@ class RemoteHost extends Host {
   
     if (name == null || name.isEmpty) name=userLogin+"@"+address;
 
-    final newHost=RemoteHost._(name, address, port, userLogin);
-    
-
-    final keyVault = Hive.box<KeyChain>("keyVault");
-    print("put $password into"+newHost.hashCode.toString());
-    keyVault.put(
-      newHost.hashCode, KeyChain(
+    final newHost=RemoteHost._(name, address, port, userLogin, KeyChain(
         password: password,
         Pem: Pem,
         passphrase: passPhrase,
-      )
-    );
+      ));
+    
     return newHost;
 
   }
@@ -123,53 +115,38 @@ class RemoteHost extends Host {
 
 class HostList {
 
-  HostList (this._settingsCubit){
+  HostList (this._repo){
     list.add(AndroidHost());
   }
 
-  final cubit_Settings _settingsCubit;
+  
   final List<Host> _list = <Host>[];
-  late final File _jsonFile;
+  final HostRepository _repo;
+
   List<Host> get list => _list;
 
-  HostList removeHost(Host toRemove) {
+  void removeHost(Host toRemove) {
+    if (toRemove is! RemoteHost)
+      throw Exception("Delete on Android Host not permitted");
     if (list.remove(toRemove)) {
-      return this;
+      _repo.remove(_list.skip(1), toRemove);
     } else {
       throw noSuchElementException("Ma questo host non ci era");
     }
   }
 
-  Future<HostList> add(Host newHost) async {
+  void add(Host newHost) async {
     list.add(newHost);
-    /*SAVE HOST ON THE DISK*/
-    await store();
-    return this;
+    _repo.add(_list.skip(1), newHost);
   }
 
 
-  Future<void> store() async {
-    List<Host> toBeSaved=_list.skip(1).toList();
-    String Json=jsonEncode(toBeSaved);
-    _jsonFile.writeAsString(Json);
-  }
-
-  Future<void> load() async {
+   Future<void> load() async {
     /*
      * Get host list
      */
-    Directory appdata=_settingsCubit.state.settings.appDataFolder;
-    _jsonFile = File(appdata.path+"/Hosts.json");
-    if (!(await _jsonFile.exists())){
-      await _jsonFile.create();
-      return;
-    }
-    String Json=_jsonFile.readAsStringSync();
-    if(Json.isEmpty) return;
-    final collection=jsonDecode(Json) as List;
-    Iterable<Host> readHosts=collection.map((e) => RemoteHost.fromJson(e));
-    _list.addAll(readHosts);
-
+   
+    _list.addAll(await _repo.load());
 
   }
 

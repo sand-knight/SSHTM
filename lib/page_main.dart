@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Executor/bloc_Jobs.dart';
 import 'package:sshtm/Executor/events_Execution.dart';
-import 'package:sshtm/Hosts/object_Host.dart';
+import 'package:sshtm/Hosts/repository_host.dart';
 import 'package:sshtm/Hosts/widget_page_Host.dart';
 import 'package:sshtm/Logs/widget_page_Logs.dart';
 import 'package:sshtm/Scripts/cubit_Scripts.dart';
@@ -95,7 +95,7 @@ class _navPageState extends State<NavigableScaffold> {
       child: MultiBlocProvider(
         providers: [
           BlocProvider(
-            create: (context) => cubit_Hosts(HostList(BlocProvider.of<cubit_Settings>(context))),
+            create: (context) => cubit_Hosts(HostRepository(BlocProvider.of<cubit_Settings>(context))),
           ),
           BlocProvider(
             create: (context) => cubit_Scripts(ScriptList(BlocProvider.of<cubit_Settings>(context))),

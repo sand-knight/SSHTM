@@ -1,5 +1,6 @@
 import "package:flutter_bloc/flutter_bloc.dart";
 import 'package:sshtm/Hosts/object_Host.dart';
+import 'package:sshtm/Hosts/repository_host.dart';
 import 'package:sshtm/Terminal/object_terminal_data.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
 
@@ -13,10 +14,10 @@ class cubit_Hosts extends Cubit<hostsState> {
   }
   */
   
-  cubit_Hosts(HostList list) : _localList=list, super(hostsNotLoadedState(list.list));
+  cubit_Hosts(HostRepository repository) : _localList=HostList(repository), super(hostsNotLoadedState(const []));
 
-  void addHost(Host newhost) async {
-    await _localList.add(newhost);
+  void addHost(Host newhost) {
+    _localList.add(newhost);
     emit(hostAdddedState(_localList.list));
   }
 

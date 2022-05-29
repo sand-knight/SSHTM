@@ -18,6 +18,11 @@ class Settings {
   late final ThemeData _theme;
   late final Directory _appData;
   late final Directory _logFolder;
+  late final Map<String, bool> storageChoices={
+    "hostsInStorage" : true,
+    "hostsInFirebase" : false,
+    "passwordsInHive" : true
+  };
 
   Directory get appDataFolder => _appData;
   Directory get logFolder => _logFolder;
@@ -33,7 +38,7 @@ class Settings {
     //needed for every data retrieval
     _appData = await getExternalStorageDirectory() as Directory;
 
-
+    //------------------------------------------------------------------ HIVE - PASSWORDS
     //where password are stored
     await Hive.initFlutter();
 
@@ -58,8 +63,8 @@ class Settings {
     final encryptionKey = base64Url.decode(unencryptedKey);
     await Hive.openBox<KeyChain>("keyVault", encryptionCipher: HiveAesCipher(encryptionKey));
 
-    /* initialize log folder */
-
+    //------------------------------------------------------------------------------ LOGS
+     /* initialize log folder */
     _logFolder = Directory.fromRawPath(
         Uint8List.fromList(utf8.encode(_appData.path + "/Logs")));
 
@@ -78,12 +83,13 @@ class Settings {
     }
 
  
- 
+  
     if (fullApp){
       
       /* Data necessary for full fledged app, like themedata */
       //WidgetsFlutterBinding.ensureInitialized();
 
+      //------------------------------------------------------------------------- THEME
       final themeStr = await rootBundle.loadString('assets/appainter_theme.json');
       final themeJson = jsonDecode(themeStr);
       _theme = ThemeDecoder.decodeThemeData(themeJson)!;

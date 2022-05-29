@@ -93,7 +93,7 @@ class RemoteTerminalBackend extends TerminalBackend {
         pty: const SSHPtyConfig(
       type: 'xterm-256color',
     ));
-
+  
     _sshOutput.addStream(_shell.stdout);
     _sshOutput.addStream(_shell.stderr);
   }
