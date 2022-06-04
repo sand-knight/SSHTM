@@ -79,7 +79,7 @@ class HostRepository{
     if (_cubit.state.settings.storageChoices["passwordsInHive"]!){
       final keyVault = Hive.box<KeyChain>("keyVault");
       print("put ${newHost.keyChain} into"+newHost.hashCode.toString());
-      await keyVault.put(newHost, newHost.keyChain!);
+      await keyVault.put(newHost.hashCode, newHost.keyChain!);
     }
      
   }
@@ -98,9 +98,9 @@ class HostRepository{
     if (_cubit.state.settings.storageChoices["passwordsInHive"]!){
       final keyVault = Hive.box<KeyChain>("keyVault");
       print("removed ${toBeRemoved.keyChain} into"+toBeRemoved.hashCode.toString());
-      await keyVault.delete(toBeRemoved);
+      await keyVault.delete(toBeRemoved.hashCode);
     }
-    throw Exception("Inconsistent state");
+    //throw Exception("Inconsistent state");
   }
 
   Future<void> _storeJson (Iterable<Host> snapshot) async{

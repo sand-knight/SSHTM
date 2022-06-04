@@ -43,7 +43,13 @@ class navigation_Sheet extends StatelessWidget {
                         textScaleFactor: 1.4,
                         ),
                       leading: const Icon(Icons.edit),
-                      trailing: const Icon(Icons.delete),
+                      trailing: GestureDetector(
+                        onTap: () {
+                          BlocProvider.of<cubit_Hosts>(context).removeHost(selectedHost);
+                          Navigator.pop(context);
+                        },
+                        child: const Icon(Icons.delete),
+                      ),
                     ),
                     ListTile(
                       tileColor: Theme.of(context).canvasColor,
