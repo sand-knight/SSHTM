@@ -9,7 +9,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:json_theme/json_theme.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../Hosts/key_chain.dart';
+import '../Hosts/object_key_chain.dart';
 
 class Settings {
 

@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-part 'key_chain.g.dart';
+part 'object_key_chain.g.dart';
 
 @HiveType(typeId: 11, adapterName: "KeyChainAdapter")
 class KeyChain extends HiveObject{

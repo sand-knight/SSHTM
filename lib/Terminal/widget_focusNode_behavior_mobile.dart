@@ -15,8 +15,7 @@ FocusNode focusNodeToIgnoreDigitKeys = FocusNode(onKey: (node, event) {
   if (whatkey == LogicalKeyboardKey.digit6) return KeyEventResult.ignored;
   if (whatkey == LogicalKeyboardKey.digit7) return KeyEventResult.ignored;
   if (whatkey == LogicalKeyboardKey.digit8) return KeyEventResult.ignored;
-  if (whatkey == LogicalKeyboardKey.digit9)
-    return KeyEventResult.ignored;
+  if (whatkey == LogicalKeyboardKey.digit9) return KeyEventResult.ignored;
   else
     return KeyEventResult.handled;
 });

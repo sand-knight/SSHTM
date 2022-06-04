@@ -21,13 +21,15 @@ class AndroidTerminaTile extends basetile {
     return ListTile(
       contentPadding: EdgeInsets.all(10),
       onTap: () => showModalBottomSheet(
-          context: context,
-          isScrollControlled: true,
-          isDismissible: true,
-          enableDrag: true,
-          builder: (context) => navigation_Sheet(
-              selectedHost:
-                  _host)), //BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
+        backgroundColor: Theme.of(context).primaryColor,
+        context: context,
+        isScrollControlled: true,
+        isDismissible: true,
+        enableDrag: true,
+        builder: (context) => navigation_Sheet(
+          selectedHost: _host
+          )
+      ),
       title: Text(_tilename),
       isThreeLine: false,
       trailing: Text(_host.openedTerminals().length.toString()),
@@ -44,11 +46,12 @@ class HostTile extends basetile {
     return ListTile(
       contentPadding: EdgeInsets.all(10),
       onTap: () => showModalBottomSheet<void>(
-          context: context,
-          isScrollControlled: true,
-          isDismissible: true,
-          enableDrag: true,
-          builder: (context) => navigation_Sheet(selectedHost: _host)),
+        backgroundColor: Theme.of(context).primaryColor,
+        context: context,
+        isScrollControlled: true,
+        isDismissible: true,
+        enableDrag: true,
+        builder: (context) => navigation_Sheet(selectedHost: _host)),
 
       //onTap: () => BlocProvider.of<cubit_Hosts>(context).addTerminal(_host),
       title: Text(_host.name),

@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'key_chain.dart';
+part of 'object_key_chain.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
