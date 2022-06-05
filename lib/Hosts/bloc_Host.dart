@@ -46,4 +46,9 @@ class cubit_Hosts extends Cubit<hostsState> {
     await _localList.load();
     emit(hostsLoadedState(_localList.list));
   }
+
+  void replaceHost(RemoteHost replaced, RemoteHost newer){
+    _localList.replace(replaced, newer);
+    emit(hostsLoadedState(_localList.list));
+  }
 }

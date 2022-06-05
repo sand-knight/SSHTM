@@ -5,10 +5,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
-import 'package:sshtm/Hosts/widget_page_new_host.dart';
+import 'package:sshtm/Hosts/widget_page_form_host.dart';
 import 'package:sshtm/Hosts/widget_tile_host.dart';
 
 import 'package:sshtm/Hosts/object_Host.dart';
+
+Future<void> _addNewHost(BuildContext context) async {
+  RemoteHost? toAdd= await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context){
+        return const HostFormPage();
+      }
+    )
+  );
+  if ( toAdd != null )
+    BlocProvider.of<cubit_Hosts>(context).addHost(toAdd);
+}
 
 class hostsAppBar extends StatelessWidget implements PreferredSizeWidget{
   const hostsAppBar({Key? key}) : super(key: key);
@@ -23,16 +36,7 @@ class hostsAppBar extends StatelessWidget implements PreferredSizeWidget{
       actions: <Widget>[
         IconButton(
           icon: Icon(Icons.add),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context){
-                  return NewHostPage();
-                }
-             )
-           );
-         }
+          onPressed: () => _addNewHost(context),
         ),
       ],
       automaticallyImplyLeading: true,

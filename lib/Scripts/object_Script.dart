@@ -272,7 +272,7 @@ class ScriptList {
     return strangefile;
   }
 
-  //TODO Add from text field
+ 
   void addScriptFromText(String name, String scriptContent) async {
     String newpath=_scripdir.path + name;
     try {
@@ -292,7 +292,7 @@ class ScriptList {
     }
   }
 
-  //TODO remove script
+
   void deleteScript(Script toDelete) {
     try {
       //File(toDelete._pathname).delete();

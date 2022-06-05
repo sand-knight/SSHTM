@@ -79,9 +79,29 @@ class HostRepository{
     if (_cubit.state.settings.storageChoices["passwordsInHive"]!){
       final keyVault = Hive.box<KeyChain>("keyVault");
       print("put ${newHost.keyChain} into"+newHost.hashCode.toString());
-      await keyVault.put(newHost.hashCode, newHost.keyChain!);
+      if (newHost.keyChain != null) keyVault.put(newHost.hashCode, newHost.keyChain!);
     }
      
+  }
+
+  Future<void> replace(Host replaced, Host newer, Iterable<Host> snapshot) async {
+    if (replaced is! RemoteHost || newer is! RemoteHost) throw Exception("arguments are not remotehost");
+
+    if (_cubit.state.settings.storageChoices["hostsInStorage"]!){
+      if (_jsonFile == null) await init();
+      await _storeJson(snapshot);
+    }
+    if (_cubit.state.settings.storageChoices["hostsInFirebase"]!){
+      /*
+       * Not even a promise :P
+       */
+    }
+    if (_cubit.state.settings.storageChoices["passwordsInHive"]!){
+      final keyVault = Hive.box<KeyChain>("keyVault");
+
+      await keyVault.delete(replaced.hashCode);
+      if (newer.keyChain != null) await keyVault.put(newer.hashCode, newer.keyChain!);
+    }
   }
 
   Future<void> remove(Iterable<Host> snapshot, Host toBeRemoved) async {

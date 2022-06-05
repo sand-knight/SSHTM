@@ -1,19 +1,23 @@
 // ignore_for_file: curly_braces_in_flow_control_structures
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:sshtm/Hosts/bloc_Host.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 
-class NewHostPage extends StatefulWidget {
-  const NewHostPage({Key? key}) : super(key: key);
+class HostFormPage extends StatefulWidget {
+  const HostFormPage(
+    {
+      Key? key,
+      RemoteHost? toEdit
+    }) :  _toEdit=toEdit,
+          super(key: key);
 
+  final RemoteHost? _toEdit;
 
   @override
-  _newHostFormState createState() =>_newHostFormState();
+  _HostFormPageState createState() =>_HostFormPageState();
 }
 
-class _newHostFormState extends State<NewHostPage> {
+class _HostFormPageState extends State<HostFormPage> {
 
   final GlobalKey<FormState> _formkey=GlobalKey<FormState>();
   String? _address;
@@ -21,13 +25,30 @@ class _newHostFormState extends State<NewHostPage> {
   String? _user;
   int? _port;
   String? _password;
+  String? _oldPassword;
 
+  void _destroyOldPassword(){
+    setState(() {
+      if (_oldPassword!=null)
+        _oldPassword=null;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _oldPassword=widget._toEdit?.keyChain?.password;
+
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add new Host"),
+        title: (widget._toEdit == null)
+          ? const Text("Add new Host")
+          : Text("Edit Host \""+widget._toEdit!.name+"\""),
           actions: <Widget>[
             IconButton(
               icon: const Icon(Icons.save),
@@ -35,16 +56,25 @@ class _newHostFormState extends State<NewHostPage> {
                 var _state = _formkey.currentState;
                 if (_state != null && _state.validate()) {
                   _state.save();
-                  BlocProvider.of<cubit_Hosts>(context).addHost(
-                    RemoteHost(
+                  RemoteHost result= RemoteHost(
                       name: _name!,
                       address: _address!,
                       port: _port!,
                       userLogin: _user!,
-                      password: _password
-                    )
+                      password: (_password != null && _password!.isNotEmpty) ? _password : _oldPassword,
                   );
-                  Navigator.pop(context);
+                  
+                  /*
+                   * Cases study:
+                   * 1) empty old password & empty new password: destroy not present, _password is null => return oldPassword which is null
+                   * 2) empty old password & new password: return password
+                   * 3) old password, empty new password: return oldPassword
+                   * 4) old password, new password: return password
+                   * 5) old password, press destroy and dont write a new password: password is null => return oldPassword which is null
+                   * 6) old password, press destroy but write a new password: password is not null, return password
+                   */
+
+                  Navigator.pop(context, result);
                   _state.dispose();
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -67,6 +97,7 @@ class _newHostFormState extends State<NewHostPage> {
           child: Column(
             children: <Widget>[
               TextFormField(
+                initialValue: widget._toEdit?.name,
                 onSaved: ((newValue) {
                   _name = newValue;
                 }),
@@ -80,6 +111,7 @@ class _newHostFormState extends State<NewHostPage> {
                 }),
               ),
               TextFormField(
+                initialValue: widget._toEdit?.address,
                 enableSuggestions: false,
                 autocorrect: false,
                 onSaved: ((newValue) {
@@ -95,6 +127,7 @@ class _newHostFormState extends State<NewHostPage> {
                 }),
               ),
               TextFormField(
+                initialValue: widget._toEdit?.port.toString(),
                 keyboardType: TextInputType.number,
                 enableSuggestions: false,
                 autocorrect: false,
@@ -115,12 +148,12 @@ class _newHostFormState extends State<NewHostPage> {
                 validator: ((newValue) {
                   if (newValue == null || newValue.isEmpty) return "Needed data";
                   int _temp = int.parse(newValue);
-                  if (_temp > 65535 || _temp < 0)
-                    return "Not a valid port number!";
+                  if (_temp > 65535 || _temp < 0) return "Not a valid port number!";
                   else return null;
                 }),
               ),
               TextFormField(
+                initialValue: widget._toEdit?.user,
                 enableSuggestions: false,
                 autocorrect: false,
                 onSaved: ((newValue) {
@@ -139,17 +172,25 @@ class _newHostFormState extends State<NewHostPage> {
                 enableSuggestions: false,
                 autocorrect: false,
                 obscureText: true,
+                enableIMEPersonalizedLearning: false,
+
                 onSaved: ((newValue) {
                   _password = newValue;
                 }),
-                decoration: const InputDecoration(
-                  labelText: 'Password',
-                ),
-                validator: ((newValue) {
-                  if (newValue==null || newValue.isEmpty)
-                    return "For now I need a password";
-                  else return null;
-                }),
+                decoration: (_oldPassword == null) 
+                  ? const InputDecoration(
+                    labelText: 'Password',
+                  )
+                  : InputDecoration(
+                    labelText: 'Password',
+                    floatingLabelBehavior: FloatingLabelBehavior.always,
+                    hintText: "(unchanged)",
+                    suffixIcon: IconButton(
+                      onPressed: _destroyOldPassword,
+                      icon: const Icon(Icons.delete_forever),
+                    ),
+                  ),
+                
               ),
             ]
           )

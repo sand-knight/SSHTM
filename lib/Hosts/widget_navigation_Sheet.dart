@@ -4,8 +4,24 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sshtm/Hosts/bloc_Host.dart';
 import 'package:sshtm/Hosts/object_Host.dart';
 import 'package:sshtm/Hosts/state_Host.dart';
+import 'package:sshtm/Hosts/widget_page_form_host.dart';
 import 'package:sshtm/Settings/cubit_settings.dart';
 import 'package:sshtm/Terminal/widget_page_Terminal.dart';
+
+Future<void> _editHost(BuildContext context, RemoteHost toEdit) async {
+  RemoteHost? edited = await Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context){
+        return HostFormPage(toEdit : toEdit);
+      }
+    )
+  );
+  if(edited!=null){
+    BlocProvider.of<cubit_Hosts>(context).replaceHost(toEdit, edited);
+  }
+  Navigator.pop(context);
+}
 
 class navigation_Sheet extends StatelessWidget {
   final Host selectedHost;
@@ -42,14 +58,24 @@ class navigation_Sheet extends StatelessWidget {
                         textAlign: TextAlign.center,
                         textScaleFactor: 1.4,
                         ),
-                      leading: const Icon(Icons.edit),
-                      trailing: GestureDetector(
-                        onTap: () {
-                          BlocProvider.of<cubit_Hosts>(context).removeHost(selectedHost);
-                          Navigator.pop(context);
-                        },
-                        child: const Icon(Icons.delete),
-                      ),
+                      leading: (selectedHost is RemoteHost)
+                        ? IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            if (selectedHost is RemoteHost)
+                            _editHost(context, selectedHost as RemoteHost);
+                          },
+                        )
+                        : null,
+                      trailing: (selectedHost is RemoteHost) 
+                        ? IconButton(
+                          onPressed: () {
+                            BlocProvider.of<cubit_Hosts>(context).removeHost(selectedHost);
+                            Navigator.pop(context);
+                          },
+                          icon: const Icon(Icons.delete),
+                        )
+                        : null,
                     ),
                     ListTile(
                       tileColor: Theme.of(context).canvasColor,

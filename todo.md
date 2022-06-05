@@ -26,3 +26,5 @@
 * [X] LOGS
 * [ ] splash screen
 * [X] remove futurebuilder in widget_screen
+* [ ] remove useless hostStates
+* [ ] add user confirm for Host delete in navigationSheet, Password destroy on (edit) page form

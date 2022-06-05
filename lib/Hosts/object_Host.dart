@@ -140,6 +140,12 @@ class HostList {
     _repo.add(_list.skip(1), newHost);
   }
 
+  void replace(RemoteHost replaced, RemoteHost newer){
+    final int i=list.indexOf(replaced);
+    _list[i]=newer;
+
+    _repo.replace(replaced, newer, _list.skip(1));
+  }
 
    Future<void> load() async {
     /*
