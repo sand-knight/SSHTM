@@ -61,7 +61,8 @@ class _HostFormPageState extends State<HostFormPage> {
                       address: _address!,
                       port: _port!,
                       userLogin: _user!,
-                      password: (_password != null && _password!.isNotEmpty) ? _password : _oldPassword,
+                      password: (_password != null && _password!.isNotEmpty)
+                                ? _password : _oldPassword,
                   );
                   
                   /*
@@ -135,11 +136,10 @@ class _HostFormPageState extends State<HostFormPage> {
                   if (newValue != null && newValue.isNotEmpty) {
                     int _temp = int.parse(newValue);
                     if (_temp >= 0 && _temp < 65536) _port = _temp;
-                    print('porto $_temp cioè $_port');
                   }
                   else {
                     _port = 0;
-                    print('porto zero perché newValue==null');
+                    print('newValue==null');
                   }
                 }),
                 decoration: const InputDecoration(
@@ -147,8 +147,8 @@ class _HostFormPageState extends State<HostFormPage> {
                 ),
                 validator: ((newValue) {
                   if (newValue == null || newValue.isEmpty) return "Needed data";
-                  int _temp = int.parse(newValue);
-                  if (_temp > 65535 || _temp < 0) return "Not a valid port number!";
+                  int? _temp = int.tryParse(newValue);
+                  if (_temp == null || _temp > 65535 || _temp < 0) return "Not a valid port number!";
                   else return null;
                 }),
               ),
@@ -190,7 +190,6 @@ class _HostFormPageState extends State<HostFormPage> {
                       icon: const Icon(Icons.delete_forever),
                     ),
                   ),
-                
               ),
             ]
           )
